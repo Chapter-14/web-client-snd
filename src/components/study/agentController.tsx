@@ -3,9 +3,7 @@ import {
   BarVisualizer,
   useVoiceAssistant,
   useRoomContext,
-  useTranscriptions,
   useTrackToggle,
-  useMediaDeviceSelect,
   useDisconnectButton,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
@@ -16,23 +14,8 @@ import {
   DataPacket_Kind,
   Track,
 } from "livekit-client";
-import { time } from "console";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Mic,
-  MicOff,
-  PhoneOff,
-  Settings,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 
 export default function AgentController({
   api,
@@ -47,10 +30,6 @@ export default function AgentController({
 
   // Custom voice control hooks
   const micToggle = useTrackToggle({ source: Track.Source.Microphone });
-  const { devices, activeDeviceId, setActiveMediaDevice } =
-    useMediaDeviceSelect({
-      kind: "audioinput",
-    });
   const { buttonProps: disconnectProps } = useDisconnectButton({
     stopTracks: true,
   });
@@ -88,7 +67,6 @@ export default function AgentController({
         );
 
         if (data.action === "scroll") {
-          console.log("Agent requested scroll to page:", data.page);
           // Your scrolling logic here:
           if (api && data.page && data.page >= 1 && data.page <= numPages) {
             api.scrollTo(data.page - 1); // scrollTo uses 0-based index

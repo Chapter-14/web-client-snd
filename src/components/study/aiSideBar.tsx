@@ -19,14 +19,12 @@ export function AISideBar({
   numPages: number;
 }) {
   const [uiState, setUiState] = useState<AIuiState>("idle");
-  const [isMinimized, setIsMinimized] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
   // Fetch token and manage LiveKit connection here
   const getToken = useCallback(async () => {
     try {
-      console.log("run");
       const response = await fetch(`/api/get-lk-token`);
       const token = await response.text();
       setToken(token);

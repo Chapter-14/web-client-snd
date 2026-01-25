@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useRef, use, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
-import { VoiceAIWidget } from "@/components/study/voiceAIWidget";
 import { TopNav } from "@/components/study/top-nav";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
@@ -87,14 +86,7 @@ export default function Study() {
             numPages={numPages}
             setNumPages={setNumPages}
           />
-          {/* <FloatingToolsMenu /> */}
         </div>
-        {/* <VoiceAIWidget
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          api={api}
-          numPages={numPages}
-        /> */}
       </div>
     </>
   );
