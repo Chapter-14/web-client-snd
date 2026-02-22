@@ -1,15 +1,15 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 → 1.1.0
-Modified principles: None
-Added sections:
-  - Branching Strategy (under Development Workflow)
+Version change: 1.2.0 → 1.3.0
+Modified principles:
+  - II. User Experience Consistency: Changed Responsive Design from mobile-first to tablet/desktop-first
+Added sections: None
 Removed sections: None
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (compatible - no changes needed)
   - .specify/templates/spec-template.md ✅ (compatible - no changes needed)
-  - .specify/templates/tasks-template.md ✅ (compatible - testing marked optional)
+  - .specify/templates/tasks-template.md ✅ (compatible - no changes needed)
 Follow-up TODOs: None
 -->
 
@@ -36,7 +36,8 @@ All user interfaces MUST provide a consistent, accessible, and intuitive experie
 
 - **Shadcn Components First**: UI elements MUST use Shadcn/ui components built on Radix UI primitives. Custom components are permitted only when Shadcn does not provide the needed functionality.
 - **Design Token Compliance**: All styling MUST use Tailwind CSS classes and CSS variables defined in the design system. Hardcoded color values are prohibited.
-- **Responsive Design**: All pages and components MUST be responsive. Mobile-first approach is REQUIRED. Breakpoints: `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px).
+- **Theme Variable Immutability**: All designs and components MUST adhere to the theme styles specified in `src/styles/globals.css`. Adding new CSS variables or modifying existing variables is PROHIBITED unless absolutely necessary and explicitly justified with a documented rationale. The established design token palette (background, foreground, primary, secondary, accent, muted, destructive, border, ring, sidebar, chart colors, and radius values) MUST be used as-is.
+- **Responsive Design**: All pages and components MUST be responsive. **Tablet/Desktop-first approach is REQUIRED** - iPad landscape (1024px+) and desktop screens are the primary target devices. Designs MUST be optimized first for `lg` (1024px) and `xl` (1280px) breakpoints, then adapted down for smaller screens. Mobile phone support is REQUIRED but secondary in priority. Breakpoints: `sm` (640px), `md` (768px), `lg` (1024px - iPad landscape/desktop), `xl` (1280px - large desktop).
 - **Loading States**: All async operations MUST display appropriate loading indicators (skeletons, spinners, or progress bars).
 - **Feedback & Notifications**: User actions MUST provide immediate visual feedback. Success/error states MUST use Sonner toast notifications consistently.
 - **Icon Usage**: Icons MUST come from Lucide React or Tabler Icons libraries. Mixing icon libraries within the same component is prohibited.
@@ -141,4 +142,4 @@ This constitution supersedes all other development practices for this project.
 - **MINOR**: New principle added or significant expansion of existing guidance
 - **PATCH**: Clarifications, wording improvements, non-semantic refinements
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-22 | **Last Amended**: 2026-02-22
+**Version**: 1.3.0 | **Ratified**: 2026-02-22 | **Last Amended**: 2026-02-22
