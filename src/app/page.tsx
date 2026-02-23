@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, HelpCircle } from "lucide-react";
 
 interface FilterOption {
   value: string;
@@ -125,7 +125,7 @@ export default function Home() {
                   name="search"
                   type="text"
                   placeholder="ابحث عن اسم مادة ..."
-                  className="h-14 pr-12 pl-5 text-base bg-background border-border/50 shadow-lg hover:shadow-xl focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 placeholder:text-muted-foreground"
+                  className="h-14 pr-12 pl-5 text-muted-foreground bg-background border-border/50 shadow-lg hover:shadow-xl focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 placeholder:text-muted-foreground"
                 />
               </div>
             </form>
@@ -199,6 +199,18 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <Link
+        href="/about"
+        className="bg-primary fixed bottom-6 right-6 z-50 hover:from-chart-3 hover:to-chart-1 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 rounded-full p-3 group hover:w-auto hover:px-5 hover:py-3 w-14 h-14 flex items-center justify-center"
+      >
+        <div className="flex items-start gap-3 overflow-hidden transition-all duration-300">
+          <HelpCircle className="w-6 h-6 flex-shrink-0 " />
+          <span className="hidden group-hover:block transition-opacity duration-300 whitespace-nowrap">
+            ما هو سند؟
+          </span>
+        </div>
+      </Link>
     </main>
   );
 }
