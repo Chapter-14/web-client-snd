@@ -63,16 +63,6 @@ export default function Home() {
 
   return (
     <main className="min-h-dvh overflow-y-auto [@media(min-height:600px)]:h-dvh [@media(min-height:600px)]:overflow-hidden flex flex-col relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 z-0" />
-      <div
-        className="absolute inset-0 opacity-[0.05] dark:opacity-[0.08] z-0"
-        style={{
-          backgroundImage: "url('/static/O.png')",
-          backgroundRepeat: "repeat",
-          backgroundSize: "200px",
-        }}
-      />
-
       <header className="w-full p-6 lg:p-8 flex items-center justify-between relative z-10 bg-background/70 dark:bg-background/70 backdrop-blur-sm border-b border-border">
         <div>
           <SignedOut>
@@ -104,10 +94,18 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="flex-1 flex flex-col items-center justify-center px-6 py-12 lg:py-16 relative z-10">
-        <div className="w-full max-w-4xl space-y-10">
+      <section className="flex-1 flex flex-col gap-4 items-center justify-start relative z-10">
+        <Image
+          src="/static/logo.png"
+          alt="Company Logo"
+          width={100}
+          height={100}
+          className="rounded-2xl drop-shadow-md"
+        />
+
+        <div className="w-full max-w-3/4 space-y-10">
           <div className="text-center space-y-6">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-center leading-tight tracking-tight bg-gradient-to-r from-foreground to-chart-1 bg-clip-text text-transparent">
+            <h1 className="text-6xl font-bold text-center leading-tight tracking-tight bg-gradient-to-r from-foreground to-chart-1 bg-clip-text text-transparent text-nowrap">
               مدرس خصوصي بالذكاء الاصطناعي
             </h1>
             <p className="text-lg sm:text-xl text-foreground max-w-2xl mx-auto leading-relaxed opacity-90">
@@ -116,75 +114,88 @@ export default function Home() {
             </p>
           </div>
 
-          <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto">
-            <div className="relative group">
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-chart-2 group-focus-within:text-chart-1 transition-colors duration-200" />
-              <Input
-                name="search"
-                type="text"
-                placeholder="ابحث عن دورة أو موضوع..."
-                className="h-14 pr-12 pl-5 text-base bg-card border-border shadow-lg hover:shadow-xl focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 placeholder:text-muted-foreground"
-              />
+          <div className="w-full max-w-2xl mx-auto bg-card rounded-3xl border border-border/50 shadow-2xl p-8 space-y-6 border-2 border-ring">
+            <h2 className="text-background text-2xl font-bold">
+              ايش تنتظر ؟ 🤔
+            </h2>
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative group">
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-chart-2 group-focus-within:text-chart-1 transition-colors duration-200" />
+                <Input
+                  name="search"
+                  type="text"
+                  placeholder="ابحث عن اسم مادة ..."
+                  className="h-14 pr-12 pl-5 text-base bg-background border-border/50 shadow-lg hover:shadow-xl focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 placeholder:text-muted-foreground"
+                />
+              </div>
+            </form>
+
+            <div className="flex items-center gap-4">
+              <div className="flex-1 h-px bg-border"></div>
+              <span className="text-muted-foreground px-2">أو</span>
+              <div className="flex-1 h-px bg-border"></div>
             </div>
-          </form>
 
-          <div className="w-full max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select
-              onValueChange={(value) => handleFilterSelect("university", value)}
-            >
-              <SelectTrigger className="h-14 bg-card border-2 border-border shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
-                <SelectValue placeholder="الجامعة" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border shadow-xl">
-                {UNIVERSITIES.map((uni) => (
-                  <SelectItem
-                    key={uni.value}
-                    value={uni.value}
-                    className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1 text-foreground"
-                  >
-                    {uni.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex justify-center items-center gap-4">
+              <Select
+                onValueChange={(value) =>
+                  handleFilterSelect("university", value)
+                }
+              >
+                <SelectContent className="bg-card border-border shadow-xl">
+                  {UNIVERSITIES.map((uni) => (
+                    <SelectItem
+                      key={uni.value}
+                      value={uni.value}
+                      className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
+                    >
+                      {uni.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+                <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                  <SelectValue placeholder="اختر الجامعة" />
+                </SelectTrigger>
+              </Select>
 
-            <Select
-              onValueChange={(value) => handleFilterSelect("major", value)}
-            >
-              <SelectTrigger className="h-14 bg-card border-2 border-border shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
-                <SelectValue placeholder="التخصص" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border shadow-xl">
-                {MAJORS.map((major) => (
-                  <SelectItem
-                    key={major.value}
-                    value={major.value}
-                    className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1 text-foreground"
-                  >
-                    {major.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select
+                onValueChange={(value) => handleFilterSelect("major", value)}
+              >
+                <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                  <SelectValue placeholder="اختر التخصص" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border shadow-xl">
+                  {MAJORS.map((major) => (
+                    <SelectItem
+                      key={major.value}
+                      value={major.value}
+                      className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
+                    >
+                      {major.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select
-              onValueChange={(value) => handleFilterSelect("subject", value)}
-            >
-              <SelectTrigger className="h-14 bg-card border-2 border-border shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
-                <SelectValue placeholder="المادة" />
-              </SelectTrigger>
-              <SelectContent className="bg-card border-border shadow-xl">
-                {SUBJECTS.map((subject) => (
-                  <SelectItem
-                    key={subject.value}
-                    value={subject.value}
-                    className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1 text-foreground"
-                  >
-                    {subject.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select
+                onValueChange={(value) => handleFilterSelect("subject", value)}
+              >
+                <SelectTrigger className="flex-1 h-14 bg-background border-border/50 shadow-lg hover:shadow-xl hover:border-chart-2 focus:shadow-xl focus:border-chart-2 focus:ring-2 focus:ring-chart-2/30 transition-all duration-300 text-base">
+                  <SelectValue placeholder="اختر الموضوع" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border shadow-xl">
+                  {SUBJECTS.map((subject) => (
+                    <SelectItem
+                      key={subject.value}
+                      value={subject.value}
+                      className="hover:bg-secondary cursor-pointer transition-colors duration-200 rounded-lg mx-1"
+                    >
+                      {subject.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </section>
