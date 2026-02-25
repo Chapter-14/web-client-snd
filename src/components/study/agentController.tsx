@@ -211,7 +211,8 @@ export default function AgentController({
 
           {/* Disconnect Button */}
           <Button
-            {...disconnectProps}
+            onClick={disconnectProps.onClick}
+            disabled={disconnectProps.disabled}
             className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"
             aria-label="Disconnect"
           >
