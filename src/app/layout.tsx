@@ -34,7 +34,7 @@ export default function RootLayout({
     <ClerkProvider localization={arSA}>
       <html lang="ar" className="dark" dir="rtl">
         <body className={`${cairo.className} font-sans antialiased`}>
-          <DirectionProvider direction="rtl">{children}</DirectionProvider>
+          <DirectionProvider dir="rtl">{children}</DirectionProvider>
         </body>
       </html>
     </ClerkProvider>
