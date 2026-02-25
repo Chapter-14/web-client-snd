@@ -1,9 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CarouselApi } from "../ui/carousel";
 import { Button } from "@/components/ui/button";
-import { X, Volume2, VolumeX, Play } from "lucide-react";
-import { LiveKitRoom } from "@livekit/components-react";
+import { X, Play } from "lucide-react";
 import AgentController from "./agentController";
+import { RoomContext } from "@livekit/components-react";
+import { Room, RoomEvent, DisconnectReason } from "livekit-client";
+import { set } from "zod/v4";
 
 type AIuiState = "idle" | "started";
 
@@ -19,8 +21,60 @@ export function AISideBar({
   numPages: number;
 }) {
   const [uiState, setUiState] = useState<AIuiState>("idle");
-  const [isMuted, setIsMuted] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [room] = useState(() => new Room({}));
+
+  const toggleConnect = () => {
+    if (uiState === "idle") {
+      setUiState("started");
+      getToken();
+    } else if (uiState === "started") {
+      setUiState("idle");
+      setToken(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!room || !token) return;
+
+    // Attach listener
+    room.on(RoomEvent.Disconnected, toggleConnect);
+
+    // Connect to room
+    const connectToRoom = async () => {
+      try {
+        if (room.state === "disconnected") {
+          await room.connect(process.env.NEXT_PUBLIC_LIVEKIT_URL!, token);
+          await room.localParticipant.setAttributes({
+            course_id: "ICS202",
+            chapter_id: "chapter3",
+            language: "Arabic",
+            user_id: "user_123",
+          });
+
+          setUiState("started");
+        }
+      } catch (error) {
+        console.error("Failed to connect:", error);
+        setUiState("idle");
+        setToken(null);
+      }
+    };
+
+    connectToRoom();
+
+    // Cleanup
+    return () => {
+      room.off(RoomEvent.Disconnected, toggleConnect);
+    };
+  }, [room, token]);
+
+  // Disconnect when switching back to idle
+  useEffect(() => {
+    if (uiState === "idle") {
+      room.disconnect();
+    }
+  }, [uiState, room]);
 
   // Fetch token and manage LiveKit connection here
   const getToken = useCallback(async () => {
@@ -29,20 +83,12 @@ export function AISideBar({
       const token = await response.text();
       setToken(token);
     } catch (error) {
+      setUiState("idle");
       console.error(error);
     }
   }, []);
 
   if (!isOpen) return null;
-
-  const handleMicToggle = () => {
-    if (uiState === "idle") {
-      setUiState("started");
-      getToken();
-    } else if (uiState === "started") {
-      setUiState("idle");
-    }
-  };
 
   return (
     <div className="flex flex-col h-full bg-[#0f4c6f]">
@@ -62,20 +108,9 @@ export function AISideBar({
       {/* Voice Assistant Section */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {token && uiState === "started" ? (
-          <LiveKitRoom
-            serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
-            token={token!}
-            connect={true}
-            video={false}
-            audio={true}
-            onDisconnected={() => {
-              handleMicToggle();
-              setToken(null);
-            }}
-            className="flex-1 flex flex-col"
-          >
+          <RoomContext.Provider value={room}>
             <AgentController api={api} numPages={numPages} />
-          </LiveKitRoom>
+          </RoomContext.Provider>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8">
             <div className="text-center mb-8 space-y-2">
@@ -87,26 +122,13 @@ export function AISideBar({
               </p>
             </div>
             <div className="flex items-center justify-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMuted(!isMuted)}
-                className="h-10 w-10 rounded-full hover:bg-[#1d5479]"
-              >
-                {isMuted ? (
-                  <VolumeX className="h-5 w-5 text-[#fffdfd]" />
-                ) : (
-                  <Volume2 className="h-5 w-5 text-[#fffdfd]" />
-                )}
-              </Button>
               {/* Main Start Button */}
               <button
-                onClick={handleMicToggle}
+                onClick={toggleConnect}
                 className="relative h-16 w-16 rounded-full flex items-center justify-center transition-all bg-[#ffa02f] hover:bg-[#ff8c1a] shadow-lg hover:scale-105"
               >
                 <Play className="h-7 w-7 text-[#0e293c]" />
               </button>
-              <div className="h-10 w-10" /> {/* Spacer for symmetry */}
             </div>
           </div>
         )}

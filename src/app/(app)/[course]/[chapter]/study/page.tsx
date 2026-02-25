@@ -15,7 +15,7 @@ export default function Study() {
   const { chapter } = useParams();
   const chapterId = Array.isArray(chapter) ? chapter[0] : chapter || "";
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);

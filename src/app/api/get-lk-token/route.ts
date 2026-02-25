@@ -10,7 +10,7 @@ export async function GET() {
   if (!apiKey || !apiSecret) {
     return new Response(
       JSON.stringify({ error: "Server misconfigured: API keys missing" }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -21,7 +21,11 @@ export async function GET() {
     identity: userId,
   });
 
-  at.addGrant({ roomJoin: true, room: "test-room" });
+  at.addGrant({
+    roomJoin: true,
+    room: "test-room-1",
+    canUpdateOwnMetadata: true,
+  });
 
   return new Response(await at.toJwt());
 }

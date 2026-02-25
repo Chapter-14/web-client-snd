@@ -7,7 +7,6 @@ import {
   Maximize2,
   Printer,
 } from "lucide-react";
-import { useState } from "react";
 
 export function ContentToolbar({
   pageNumber,
@@ -113,7 +112,7 @@ export function ContentToolbar({
 
       <div className="w-px h-6 bg-[#0e293c] mx-2" />
 
-      <div className="bg-foreground text-card px-1 rounded-sm">
+      <div className="bg-foreground px-1 rounded-sm text-background font-bold">
         {pageNumber} / {numPages}
       </div>
     </div>
