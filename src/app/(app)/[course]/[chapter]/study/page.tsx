@@ -12,11 +12,17 @@ import { AISideBar } from "@/components/study/aiSideBar";
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
 export default function Study() {
+  // Get chapter ID from URL params
   const { chapter } = useParams();
+
+  // Handle case where chapter might be an array (e.g., from catch-all routes)
   const chapterId = Array.isArray(chapter) ? chapter[0] : chapter || "";
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
+  // control sidebar visibility
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Carosel control state
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
 
@@ -32,13 +38,13 @@ export default function Study() {
       const { data: chapter, error }: { data: Chapter | null; error: any } =
         await supabase
           .from("chapters")
-          .select("pdf_url, json_url")
+          .select("pdf_url")
           .eq("id", parseInt(chapterId, 10))
           .single();
 
       if (error) {
         console.error("Error fetching courses:", error);
-        return { pdf_url: null, json_url: null };
+        return { pdf_url: null };
       }
 
       setPdfUrl(chapter?.pdf_url || null);
@@ -47,12 +53,6 @@ export default function Study() {
     if (chapterId) {
       fetchChapterMaterial();
     }
-
-    // Cleanup function
-    return () => {
-      audioRef.current?.pause();
-      audioRef.current = null;
-    };
   }, [chapterId]);
 
   return (

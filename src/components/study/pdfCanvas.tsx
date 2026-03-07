@@ -34,6 +34,7 @@ export function PdfCanvas({
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
 
+  // Agent page control logic
   useEffect(() => {
     if (!api) {
       return;
