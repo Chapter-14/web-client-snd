@@ -23,7 +23,7 @@ export async function GET() {
 
   at.addGrant({
     roomJoin: true,
-    room: "test-room-1",
+    room: `study-session-${userId}-${Date.now()}`, // Unique room name per user/session
     canUpdateOwnMetadata: true,
   });
 
