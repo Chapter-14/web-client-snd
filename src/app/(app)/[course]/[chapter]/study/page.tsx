@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
 import { TopNav } from "@/components/study/top-nav";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
-import { Database } from "@/types/database.types";
+import { Database, Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { AISideBar } from "@/components/study/aiSideBar";
 
@@ -25,6 +25,7 @@ export default function Study() {
   // Carosel control state
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
+  const [topicsJSON, setTopicsJSON] = useState<Json>({});
 
   const supabase = useDatabase();
 
@@ -34,7 +35,7 @@ export default function Study() {
 
   useEffect(() => {
     // Fetch chapter material
-    async function fetchChapterMaterial() {
+    async function fetchChapterPDF() {
       const { data: chapter, error }: { data: Chapter | null; error: any } =
         await supabase
           .from("chapters")
@@ -50,10 +51,41 @@ export default function Study() {
       setPdfUrl(chapter?.pdf_url || null);
     }
 
-    if (chapterId) {
-      fetchChapterMaterial();
+    async function fetchTopicsJSON() {
+      try {
+        // Get signed URL from server
+        const signedUrlResponse = await fetch("/api/fetch-from-bunny", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filePath: "/sanad/phys_1040/ch_1/topics_list.json" }),
+        });
+
+        if (!signedUrlResponse.ok) {
+          throw new Error(`Failed to get signed URL: ${signedUrlResponse.status}`);
+        }
+
+        const { url: signedUrl } = await signedUrlResponse.json();
+
+        // Fetch the actual JSON using the signed URL
+        const response = await fetch(signedUrl);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch topics JSON: ${response.status}`);
+        }
+
+        const topics = await response.json();
+        setTopicsJSON(topics);
+      } catch (error) {
+        console.error("Error fetching topics JSON:", error);
+        setTopicsJSON({});
+      }
     }
-  }, [chapterId]);
+
+    if (chapterId) {
+      fetchChapterPDF();
+      fetchTopicsJSON();
+    }
+  }, [chapterId, supabase]);
 
   return (
     <>
@@ -74,6 +106,7 @@ export default function Study() {
             onClose={() => setSidebarOpen(false)}
             api={api}
             numPages={numPages}
+            topicsJSON={topicsJSON}
           />
         </div>
 
