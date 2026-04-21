@@ -16,41 +16,38 @@ export type Database = {
     Tables: {
       chapters: {
         Row: {
-          chapter_number: number
-          course_id: number
-          description: string
-          duration: number
-          id: number
-          json_url: string
-          lessons: number
-          pdf_url: string
+          course_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          order_index: number | null
+          pdf_url: string | null
+          status: string | null
           title: string
         }
         Insert: {
-          chapter_number?: number
-          course_id: number
-          description?: string
-          duration: number
-          id?: number
-          json_url?: string
-          lessons: number
-          pdf_url?: string
-          title?: string
+          course_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_index?: number | null
+          pdf_url?: string | null
+          status?: string | null
+          title: string
         }
         Update: {
-          chapter_number?: number
-          course_id?: number
-          description?: string
-          duration?: number
-          id?: number
-          json_url?: string
-          lessons?: number
-          pdf_url?: string
+          course_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_index?: number | null
+          pdf_url?: string | null
+          status?: string | null
           title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "course_course_id_fkey"
+            foreignKeyName: "chapters_course_id_fkey"
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
@@ -58,50 +55,100 @@ export type Database = {
           },
         ]
       }
+      course_majors: {
+        Row: {
+          course_id: string
+          major_id: number
+        }
+        Insert: {
+          course_id: string
+          major_id: number
+        }
+        Update: {
+          course_id?: string
+          major_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_majors_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_majors_major_id_fkey"
+            columns: ["major_id"]
+            isOneToOne: false
+            referencedRelation: "majors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
-          chapters: number
-          description: string
-          duration: number
-          id: number
-          img_url: string
-          owner_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          institution_id: number | null
+          level: string | null
+          slug: string | null
+          status: string | null
           title: string
         }
         Insert: {
-          chapters?: number
-          description?: string
-          duration?: number
-          id?: number
-          img_url?: string
-          owner_id?: string
-          title?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          institution_id?: number | null
+          level?: string | null
+          slug?: string | null
+          status?: string | null
+          title: string
         }
         Update: {
-          chapters?: number
-          description?: string
-          duration?: number
-          id?: number
-          img_url?: string
-          owner_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          institution_id?: number | null
+          level?: string | null
+          slug?: string | null
+          status?: string | null
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "courses_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       enrollments: {
         Row: {
-          course_id: number
-          enrolled_at: string | null
+          course_id: string
+          created_at: string
+          is_active: boolean
+          updated_at: string
           user_id: string
         }
         Insert: {
-          course_id: number
-          enrolled_at?: string | null
+          course_id: string
+          created_at?: string
+          is_active?: boolean
+          updated_at?: string
           user_id: string
         }
         Update: {
-          course_id?: number
-          enrolled_at?: string | null
+          course_id?: string
+          created_at?: string
+          is_active?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -110,6 +157,117 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "enrollments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institutions: {
+        Row: {
+          created_at: string
+          id: number
+          image_url: string | null
+          name: string
+          slug: string | null
+          type: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          image_url?: string | null
+          name: string
+          slug?: string | null
+          type?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          image_url?: string | null
+          name?: string
+          slug?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
+      majors: {
+        Row: {
+          created_at: string
+          id: number
+          image_url: string | null
+          institution_id: number | null
+          name: string
+          slug: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          image_url?: string | null
+          institution_id?: number | null
+          name: string
+          slug?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          image_url?: string | null
+          institution_id?: number | null
+          name?: string
+          slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "majors_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          institution_id: number | null
+          level: number | null
+          major_id: number | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          institution_id?: number | null
+          level?: number | null
+          major_id?: number | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_id?: number | null
+          level?: number | null
+          major_id?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_major_id_fkey"
+            columns: ["major_id"]
+            isOneToOne: false
+            referencedRelation: "majors"
             referencedColumns: ["id"]
           },
         ]
@@ -122,12 +280,14 @@ export type Database = {
       get_unenrolled_courses: {
         Args: { check_user_id: string }
         Returns: {
-          chapters: number
-          description: string
-          duration: number
-          id: number
-          img_url: string
-          owner_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          institution_id: number | null
+          level: string | null
+          slug: string | null
+          status: string | null
           title: string
         }[]
         SetofOptions: {
