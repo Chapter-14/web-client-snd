@@ -108,6 +108,8 @@ export default function Study() {
             api={api}
             numPages={numPages}
             topicsJSON={topicsJSON}
+            courseSlug={courseSlug}
+            chapterIndex={chapterIndex}
           />
         </div>
 

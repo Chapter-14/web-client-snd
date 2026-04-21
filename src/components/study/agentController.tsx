@@ -292,9 +292,6 @@ export default function AgentController({
                   <span className="text-sm text-[#fffdfd] truncate flex-1">
                     {topic.name}
                   </span>
-                  {state === "current" && (
-                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ffa02f] animate-pulse" />
-                  )}
                 </div>
               );
             })}

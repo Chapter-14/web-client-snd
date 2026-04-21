@@ -15,12 +15,16 @@ export function AISideBar({
   api,
   numPages,
   topicsJSON,
+  courseSlug,
+  chapterIndex,
 }: {
   isOpen: boolean;
   onClose: () => void;
   api: CarouselApi | null;
   numPages: number;
   topicsJSON: Json;
+  courseSlug: string;
+  chapterIndex: number;
 }) {
   const { user } = useUser();
 
@@ -58,8 +62,8 @@ export function AISideBar({
 
       // Set participant attributes after connection
       await session.room.localParticipant.setAttributes({
-        course_id: "phys_1040",
-        chapter_id: "ch_1",
+        course_id: courseSlug,
+        chapter_id: `ch_${chapterIndex}`,
         language: language,
         user_name: user?.fullName || "undefined",
       });
