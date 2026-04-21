@@ -20,7 +20,7 @@ type Course = Database["public"]["Tables"]["courses"]["Row"];
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
 export default function CoursePage() {
-  const { course: courseId }: { course: string } = useParams();
+  const { course: courseSlug }: { course: string } = useParams();
   const [course, setCourse] = useState<Course | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,7 +34,7 @@ export default function CoursePage() {
       const { data: course, error } = await supabase
         .from("courses")
         .select("*")
-        .eq("id", parseInt(courseId, 10))
+        .eq("slug", courseSlug)
         .single();
 
       if (error) {
@@ -49,9 +49,14 @@ export default function CoursePage() {
 
       const { data: chapters, error } = await supabase
         .from("chapters")
-        .select("*")
-        .eq("course_id", parseInt(courseId, 10))
-        .order("chapter_number", { ascending: true });
+        .select(
+          `
+          *,
+          courses!inner(slug)
+        `,
+        )
+        .eq("courses.slug", courseSlug)
+        .order("order_index", { ascending: true });
 
       if (error) {
         console.error("Error fetching chapters:", error);
@@ -62,7 +67,7 @@ export default function CoursePage() {
     };
     fetchChapters();
     fetchCourse();
-  }, [supabase, courseId]); // Add dependencies
+  }, [supabase, courseSlug]); // Add dependencies
 
   if (!course) {
     return <div>Course not found</div>;
@@ -85,7 +90,7 @@ export default function CoursePage() {
         </div>
         <h1 className="text-3xl font-bold">{course?.title || ""}</h1>
         <p className="text-card">{course?.description || ""}</p>
-        <div className="flex items-center gap-4 text-sm">
+        {/* <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <BookOpen className="h-4 w-4" />
             <span>{course?.chapters || 0} فصول</span>
@@ -94,7 +99,7 @@ export default function CoursePage() {
             <Clock className="h-4 w-4" />
             <span>{course?.duration || 0} ساعات</span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Chapters Grid */}
@@ -107,7 +112,7 @@ export default function CoursePage() {
                 className="hover:shadow-lg transition-shadow cursor-pointer relative justify-between"
               >
                 <Link
-                  href={`/${course.id}/${chapter.id}/study`}
+                  href={`/${course.slug}/${chapter.order_index}/study`}
                   className="absolute inset-0 z-10"
                 />
                 <CardHeader>
@@ -115,7 +120,7 @@ export default function CoursePage() {
                     <div className="flex items-start gap-2 flex-1">
                       <div className="space-y-1 flex-1">
                         <CardTitle className="text-lg">
-                          الفصل {chapter.id}: {chapter.title}
+                          الفصل {chapter.order_index}: {chapter.title}
                         </CardTitle>
                         <CardDescription>{chapter.description}</CardDescription>
                       </div>
@@ -124,14 +129,14 @@ export default function CoursePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-1">
+                    {/* <div className="flex items-center gap-1">
                       <BookOpen className="h-4 w-4" />
                       <span>{chapter.lessons} دروس</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="h-4 w-4" />
                       <span>{chapter.duration} دقيقة</span>
-                    </div>
+                    </div> */}
                   </div>
                   <Button className="w-full" variant="default">
                     ذاكر الدرس

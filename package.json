@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "update-db-types": "npx supabase gen types typescript --project-id \"ojqocafhaqvvyhmkzuew\" > src/types/database.types.ts"
+    "update-db-types": "npx supabase gen types typescript --project-id \"xrfnkwvvdmyjksxbmpld\" > src/types/database.types.ts"
   },
   "dependencies": {
     "@ai-sdk/elevenlabs": "^1.0.21",

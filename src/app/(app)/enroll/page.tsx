@@ -27,8 +27,8 @@ export default function EnrollPage() {
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [enrollingCourseId, setEnrollingCourseId] = useState<number | null>(
-    null
+  const [enrollingCourseId, setEnrollingCourseId] = useState<string | null>(
+    null,
   );
   const { user } = useUser();
 
@@ -39,7 +39,7 @@ export default function EnrollPage() {
       setLoading(true);
       const { data: courses, error } = await supabase.rpc(
         "get_unenrolled_courses",
-        { check_user_id: user?.id || "" } as any
+        { check_user_id: user?.id || "" } as any,
       );
 
       if (error) {
@@ -53,7 +53,7 @@ export default function EnrollPage() {
     fetchCourses();
   }, [supabase]);
 
-  const handleEnroll = async (courseId: number) => {
+  const handleEnroll = async (courseId: string) => {
     try {
       setEnrollingCourseId(courseId);
 
@@ -76,7 +76,7 @@ export default function EnrollPage() {
     } catch (error) {
       console.error("Error enrolling in course:", error);
       toast.error(
-        error instanceof Error ? error.message : "حدث خطأ أثناء التسجيل"
+        error instanceof Error ? error.message : "حدث خطأ أثناء التسجيل",
       );
     } finally {
       setEnrollingCourseId(null);
@@ -120,7 +120,8 @@ export default function EnrollPage() {
                   <div className="space-y-1">
                     <Image
                       src={
-                        course.img_url || "/static/course-card-placeholder.png"
+                        course.image_url ||
+                        "/static/course-card-placeholder.png"
                       }
                       alt="Chapter"
                       width={100}
@@ -139,7 +140,7 @@ export default function EnrollPage() {
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent>
+              {/* <CardContent>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <BookOpen className="h-4 w-4" />
@@ -150,7 +151,7 @@ export default function EnrollPage() {
                     <span>{course.duration} ساعة</span>
                   </div>
                 </div>
-              </CardContent>
+              </CardContent> */}
               <CardContent className="px-6">
                 <Button
                   onClick={() => handleEnroll(course.id)}

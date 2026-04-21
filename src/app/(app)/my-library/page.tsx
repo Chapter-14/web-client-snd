@@ -53,8 +53,8 @@ export default function LibraryPage() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold"></h1>
-        <p className="text-card">مكتبة دوراتك</p>
+        <h1 className="text-3xl font-bold">مكتبة دوراتك</h1>
+        <p className="text-card">تصفح دوراتك المميزة</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -64,7 +64,7 @@ export default function LibraryPage() {
             className="hover:shadow-lg transition-shadow cursor-pointer relative justify-between"
           >
             <Link
-              href={`my-library/${course.id}/`}
+              href={`my-library/${course.slug}/`}
               className="absolute inset-0 z-10"
             />
             <CardHeader>
@@ -72,7 +72,7 @@ export default function LibraryPage() {
                 <div className="space-y-1">
                   <Image
                     src={
-                      course.img_url || "/static/course-card-placeholder.png"
+                      course.image_url || "/static/course-card-placeholder.png"
                     }
                     alt="Chapter"
                     width={100}
@@ -91,7 +91,7 @@ export default function LibraryPage() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent>
+            {/* <CardContent>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <BookOpen className="h-4 w-4" />
@@ -102,7 +102,7 @@ export default function LibraryPage() {
                   <span>{course.duration} ساعة</span>
                 </div>
               </div>
-            </CardContent>
+            </CardContent> */}
           </Card>
         ))}
       </div>

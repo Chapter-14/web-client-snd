@@ -14,10 +14,17 @@ type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
 export default function Study() {
   // Get chapter ID from URL params
-  const { chapter } = useParams();
+  const params = useParams<{
+    course: string | string[];
+    chapter: string | string[];
+  }>();
 
-  // Handle case where chapter might be an array (e.g., from catch-all routes)
-  const chapterId = Array.isArray(chapter) ? chapter[0] : chapter || "";
+  const courseSlug = Array.isArray(params.course)
+    ? params.course[0]
+    : params.course || "";
+  const chapterIndex = parseInt(
+    Array.isArray(params.chapter) ? params.chapter[0] : params.chapter || "1",
+  );
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   // control sidebar visibility
@@ -40,22 +47,27 @@ export default function Study() {
       const { data: chapter, error }: { data: Chapter | null; error: any } =
         await supabase
           .from("chapters")
-          .select("pdf_url")
-          .eq("id", parseInt(chapterId, 10))
+          .select(
+            `
+          *,
+          courses!inner(slug)
+        `,
+          )
+          .eq("courses.slug", courseSlug)
+          .eq("order_index", chapterIndex) // Optional: add if you want a specific chapter
           .single();
 
       if (error) {
         console.error("Error fetching courses:", error);
         return { pdf_url: null };
       }
-
       setPdfUrl(chapter?.pdf_url || null);
     }
 
     async function fetchTopicsJSON() {
       try {
         const response = await fetch(
-          "/api/fetch-bunny/sanad/phys_1040/ch_1/topics_list.json",
+          `/api/fetch-bunny/courses/${courseSlug}/ch_${chapterIndex}/topics_list.json`,
         );
 
         const data = await response.json();
@@ -70,11 +82,11 @@ export default function Study() {
       }
     }
 
-    if (chapterId) {
+    if (chapterIndex) {
       fetchChapterPDF();
       fetchTopicsJSON();
     }
-  }, [chapterId, supabase]);
+  }, [courseSlug, chapterIndex, supabase]);
 
   return (
     <>
