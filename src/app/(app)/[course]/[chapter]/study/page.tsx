@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
-import { TopNav } from "@/components/study/top-nav";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
 import { Database, Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { AISideBar } from "@/components/study/aiSideBar";
-import { set } from "zod/v4";
+import { NavigationMenu } from "@/components/navigation-menu";
 
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
@@ -40,6 +39,8 @@ export default function Study() {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // Fetch chapter material
@@ -90,12 +91,12 @@ export default function Study() {
 
   return (
     <>
-      <TopNav onAIToggle={toggleSidebar} sidebarOpen={sidebarOpen} />
+      <NavigationMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <div className="flex overflow-x-hidden bg-background pt-16">
+      <div className="flex overflow-x-hidden bg-background">
         {/* AI sidebar */}
         <div
-          className={`relative right-0 top-0 h-[calc(100vh-4rem)] bg-card transition-transform duration-300 ease-in-out z-50 xl:w-100 lg:w-75 ${
+          className={`relative right-0 top-0 h-screen bg-card transition-transform duration-300 ease-in-out z-50 xl:w-100 lg:w-75 ${
             sidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
           }`}
           style={{
@@ -110,11 +111,12 @@ export default function Study() {
             topicsJSON={topicsJSON}
             courseSlug={courseSlug}
             chapterIndex={chapterIndex}
+            setMenuOpen={setMenuOpen}
           />
         </div>
 
         {/* Main Canvas - shrinks when sidebar opens on desktop */}
-        <div className="flex-1 transition-all duration-300 relative">
+        <div className="flex-1 transition-all duration-300 relative h-screen">
           <PdfCanvas
             pdfUrl={pdfUrl}
             api={api}
