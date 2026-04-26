@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { CarouselApi } from "../ui/carousel";
-import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { X, Play } from "lucide-react";
+import { Menu, Play } from "lucide-react";
 import AgentController from "./agentController";
 import { useSession, SessionProvider } from "@livekit/components-react";
 import { TokenSource } from "livekit-client";
 import { Json } from "@/types/database.types";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 export function AISideBar({
   onClose,
@@ -17,6 +17,7 @@ export function AISideBar({
   topicsJSON,
   courseSlug,
   chapterIndex,
+  setMenuOpen,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -25,9 +26,10 @@ export function AISideBar({
   topicsJSON: Json;
   courseSlug: string;
   chapterIndex: number;
+  setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   // Language selection state
-  const [language, setLanguage] = useState<"English" | "Arabic">("Arabic");
+  const [language, setLanguage] = useState<"English" | "Arabic">("English");
   const { user } = useUser();
   const userName = user?.fullName ?? "undefined";
   const chapterId = "ch_" + chapterIndex;
@@ -70,16 +72,10 @@ export function AISideBar({
           },
         },
       });
-
-      // Set participant attributes after connection
-      // await session.room.localParticipant.setAttributes({
-      //   course_id: courseSlug,
-      //   chapter_id: `ch_${chapterIndex}`,
-      //   language: language,
-      //   user_name: user?.name || "undefined",
-      // });
+      document.documentElement.requestFullscreen();
     } catch (error) {
       console.error("Failed to start session:", error);
+      document.exitFullscreen();
     }
   };
 
@@ -102,37 +98,47 @@ export function AISideBar({
             />
           </SessionProvider>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8">
-            <div className="text-center mb-8 space-y-2">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 gap-4 relative">
+            <div className="absolute top-10 flex justify-between items-center gap-2 w-full py-2 px-6 rounded-lg">
+              <button
+                onClick={() => setMenuOpen((prev) => !prev)}
+                className="cursor-pointer "
+              >
+                <Menu className="h-8 w-8 text-[#fffdfd]" />
+              </button>
+              {/* Language Switch */}
+              <ToggleGroup
+                type="single"
+                value={language}
+                onValueChange={(val) =>
+                  val && setLanguage(val as "English" | "Arabic")
+                }
+                variant="outline"
+              >
+                <ToggleGroupItem value="Arabic">عربي</ToggleGroupItem>
+                <ToggleGroupItem value="English">English</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+
+            <div className="text-center space-y-2">
               <h3 className="text-xl font-semibold text-[#fffdfd]">
-                مستعد للمساعدة
+                مستعد للرحلة؟
               </h3>
               <p className="text-sm text-[#fffdfd]/70">
-                انقر على زر التشغيل للبدء في المحادثة مع سند
+                مرحبا! انا سند، مدرسك الخصوصي المدعوم بالذكاء الاصطناعي. اضغط
+                على زر البدء لنبدأ رحلة التعلم!
               </p>
             </div>
+            {/* Main Start Button */}
             <div className="flex items-center justify-center gap-3">
-              {/* Main Start Button */}
               <button
                 onClick={handleStart}
-                className="relative h-16 w-16 rounded-full flex items-center justify-center transition-all bg-[#ffa02f] hover:bg-[#ff8c1a] shadow-lg hover:scale-105"
+                className="relative py-2 px-12 rounded-lg flex items-center gap-2 text-primary justify-center transition-all bg-[#ffa02f] hover:bg-[#ff8c1a] shadow-lg hover:scale-105"
               >
-                <Play className="h-7 w-7 text-[#0e293c]" />
+                ابدأ الان
+                <Play className="h-7 w-7 text-primary" />
               </button>
             </div>
-            {/* Language Switch */}
-            <ToggleGroup
-              type="single"
-              value={language}
-              onValueChange={(val) =>
-                val && setLanguage(val as "English" | "Arabic")
-              }
-              variant="outline"
-              className="mt-4"
-            >
-              <ToggleGroupItem value="English">EN</ToggleGroupItem>
-              <ToggleGroupItem value="Arabic">AR</ToggleGroupItem>
-            </ToggleGroup>
           </div>
         )}
       </div>
