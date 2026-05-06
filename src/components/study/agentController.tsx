@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { Json } from "@/types/database.types";
 import { markerPayload } from "@/types/types";
+import { set } from "zod/v4";
 
 interface Topic {
   name: string;
@@ -54,7 +55,9 @@ export default function AgentController({
   numPages: number;
   topicsJSON: Json;
   topicStates?: Record<string, TopicState>;
-  setActiveMarker: React.Dispatch<React.SetStateAction<markerPayload[]>>;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
 }) {
   const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
@@ -122,6 +125,8 @@ export default function AgentController({
       number_of_sections?: number;
       current_section_index?: number;
       checkpoint_question?: string;
+      add?: { [key: string]: markerPayload };
+      remove?: string[];
     }
 
     const handleData = (
@@ -156,6 +161,28 @@ export default function AgentController({
         } else if (data.action === "section_done") {
           setCurrentSectionName(null);
           setCurrentSectionIndex(null);
+        } else if (data.action === "remove_markers") {
+          if (data.remove) {
+            setActiveMarker((prev) => {
+              const next = { ...prev };
+              for (const id of data.remove!) {
+                delete next[id];
+              }
+              return next;
+            });
+          }
+        } else if (data.action === "add_markers") {
+          if (data.add) {
+            for (const [id, marker] of Object.entries(data.add)) {
+              if (marker.delay > 0) {
+                setTimeout(() => {
+                  setActiveMarker((prev) => ({ ...prev, [id]: marker }));
+                }, marker.delay);
+              } else {
+                setActiveMarker((prev) => ({ ...prev, [id]: marker }));
+              }
+            }
+          }
         }
       }
     };
@@ -165,21 +192,6 @@ export default function AgentController({
       room.off(RoomEvent.DataReceived, handleData);
     };
   }, [room, api, numPages]);
-
-  useEffect(() => {
-    room.registerRpcMethod("setTopic", async (data: RpcInvocationData) => {
-      const payload = JSON.parse(data.payload);
-      if (payload.topic) {
-        setCurrentTopicName(payload.topic);
-        setNumberOfSections(payload.number_of_sections || null);
-      }
-      return JSON.stringify({ success: true });
-    });
-
-    return () => {
-      room.unregisterRpcMethod("setTopic");
-    };
-  }, [room]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -441,7 +453,10 @@ export default function AgentController({
       <div className="flex items-center justify-start gap-2 p-2 mt-auto">
         {/* Disconnect Button */}
         <Button
-          onClick={disconnectProps.onClick}
+          onClick={() => {
+            disconnectProps.onClick();
+            setActiveMarker({}); // Clear all markers on disconnect
+          }}
           disabled={disconnectProps.disabled}
           className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"
           aria-label="Disconnect"

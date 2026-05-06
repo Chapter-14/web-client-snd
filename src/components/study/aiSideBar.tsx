@@ -28,7 +28,7 @@ export function AISideBar({
   courseSlug: string;
   chapterIndex: number;
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setActiveMarker: React.Dispatch<React.SetStateAction<markerPayload[]>>;
+  setActiveMarker: React.Dispatch<React.SetStateAction<Record<string, markerPayload>>>;
 }) {
   // Language selection state
   const [language, setLanguage] = useState<"English" | "Arabic">("English");

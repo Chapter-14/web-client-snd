@@ -15,5 +15,11 @@ export type CourseContent = CoursePage[];
 export type markerPayload = {
   type: "highlight" | "circle" | "underline" | "point";
   page: number;
-  id: number;
+  span_id: number;
+  delay: number;
+};
+
+export type UIMarkersUpdates = {
+  add: { [key: string]: markerPayload };
+  remove: string[];
 };

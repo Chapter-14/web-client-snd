@@ -32,7 +32,7 @@ export function PdfCanvas({
   setApi: React.Dispatch<React.SetStateAction<CarouselApi | null>>;
   numPages: number;
   setNumPages: React.Dispatch<React.SetStateAction<number>>;
-  activeMarker: markerPayload[];
+  activeMarker: Record<string, markerPayload>;
 }) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
@@ -61,17 +61,15 @@ export function PdfCanvas({
         return "";
       }
 
-      // EXACT MATCH LOGIC: Both Page AND ID must match
-
-      for (const { type, page, id } of activeMarker) {
-        if (page === renderPageNumber && id === itemIndex) {
+      for (const { type, page, span_id } of Object.values(activeMarker)) {
+        if (page === renderPageNumber && span_id === itemIndex) {
           return `<mark class="agent-${type}" id="pdf-mark-${renderPageNumber}-${itemIndex}">${str}</mark>`;
         }
       }
 
       return `<span id="pdf-span-${renderPageNumber}-${itemIndex}">${str}</span>`;
     },
-    [activeMarker], // Re-build the factory when any active annotation changes
+    [activeMarker],
   );
 
   return (

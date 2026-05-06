@@ -36,7 +36,9 @@ export default function Study() {
   const [topicsJSON, setTopicsJSON] = useState<Json>({});
 
   // State to track agent markers
-  const [activeMarker, setActiveMarker] = useState<markerPayload[]>([]);
+  const [activeMarker, setActiveMarker] = useState<
+    Record<string, markerPayload>
+  >({});
 
   const supabase = useDatabase();
 
@@ -92,34 +94,6 @@ export default function Study() {
       fetchTopicsJSON();
     }
   }, [courseSlug, chapterIndex, supabase]);
-
-  function handleTestHighlight() {
-    setTimeout(() => {
-      setActiveMarker((prev) => [
-        ...prev,
-        { type: "highlight", page: 2, id: 2 },
-      ]);
-    }, 1000);
-
-    setTimeout(() => {
-      setActiveMarker((prev) => [...prev, { type: "circle", page: 2, id: 14 }]);
-    }, 2000);
-
-    setTimeout(() => {
-      setActiveMarker((prev) => [...prev, { type: "point", page: 2, id: 92 }]);
-    }, 3000);
-
-    setTimeout(() => {
-      setActiveMarker((prev) => [
-        ...prev,
-        { type: "underline", page: 2, id: 35 },
-      ]);
-    }, 4000);
-
-    // setTimeout(() => {
-    //   setActiveMarker([]);
-    // }, 5000);
-  }
 
   return (
     <>
