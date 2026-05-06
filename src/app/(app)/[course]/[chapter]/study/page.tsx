@@ -8,6 +8,7 @@ import { Database, Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { AISideBar } from "@/components/study/aiSideBar";
 import { NavigationMenu } from "@/components/navigation-menu";
+import { markerPayload } from "@/types/types";
 
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
@@ -33,6 +34,9 @@ export default function Study() {
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
   const [topicsJSON, setTopicsJSON] = useState<Json>({});
+
+  // State to track agent markers
+  const [activeMarker, setActiveMarker] = useState<markerPayload[]>([]);
 
   const supabase = useDatabase();
 
@@ -89,14 +93,42 @@ export default function Study() {
     }
   }, [courseSlug, chapterIndex, supabase]);
 
+  function handleTestHighlight() {
+    setTimeout(() => {
+      setActiveMarker((prev) => [
+        ...prev,
+        { type: "highlight", page: 2, id: 2 },
+      ]);
+    }, 1000);
+
+    setTimeout(() => {
+      setActiveMarker((prev) => [...prev, { type: "circle", page: 2, id: 14 }]);
+    }, 2000);
+
+    setTimeout(() => {
+      setActiveMarker((prev) => [...prev, { type: "point", page: 2, id: 92 }]);
+    }, 3000);
+
+    setTimeout(() => {
+      setActiveMarker((prev) => [
+        ...prev,
+        { type: "underline", page: 2, id: 35 },
+      ]);
+    }, 4000);
+
+    // setTimeout(() => {
+    //   setActiveMarker([]);
+    // }, 5000);
+  }
+
   return (
     <>
       <NavigationMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <div className="flex overflow-x-hidden bg-background">
+      <div className="flex overflow-x-hidden bg-background max-h-screen">
         {/* AI sidebar */}
         <div
-          className={`relative right-0 top-0 h-screen bg-card transition-transform duration-300 ease-in-out z-50 xl:w-100 lg:w-75 ${
+          className={`relative right-0 top-0 bg-card transition-transform duration-300 ease-in-out z-50 xl:w-100 lg:w-75 ${
             sidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
           }`}
           style={{
@@ -112,6 +144,7 @@ export default function Study() {
             courseSlug={courseSlug}
             chapterIndex={chapterIndex}
             setMenuOpen={setMenuOpen}
+            setActiveMarker={setActiveMarker}
           />
         </div>
 
@@ -123,6 +156,7 @@ export default function Study() {
             setApi={setApi}
             numPages={numPages}
             setNumPages={setNumPages}
+            activeMarker={activeMarker}
           />
         </div>
       </div>

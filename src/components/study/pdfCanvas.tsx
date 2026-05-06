@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { markerPayload } from "@/types/types";
 
 // 1. Configure the worker to use a CDN (easiest setup)
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -18,30 +19,24 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import "react-pdf/dist/Page/TextLayer.css";
 // import "@/styles/AnnotationLayer.css";
 
-type markerPayload = {
-  type: "highlight" | "circle" | "underline" | "point";
-  page: number;
-  id: number;
-};
-
 export function PdfCanvas({
   pdfUrl,
   api,
   setApi,
   numPages,
   setNumPages,
+  activeMarker,
 }: {
   pdfUrl: string | null;
   api: CarouselApi | null;
   setApi: React.Dispatch<React.SetStateAction<CarouselApi | null>>;
   numPages: number;
   setNumPages: React.Dispatch<React.SetStateAction<number>>;
+  activeMarker: markerPayload[];
 }) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
 
-  // State to track agent markers
-  const [activeMarker, setActiveMarker] = useState<markerPayload[]>([]);
   // Agent page control logic
   useEffect(() => {
     if (!api) {
@@ -79,102 +74,71 @@ export function PdfCanvas({
     [activeMarker], // Re-build the factory when any active annotation changes
   );
 
-  const handleTestHighlight = () => {
-    // This exact string exists in the first paragraph of your screenshot
-
-    setTimeout(() => {
-      setActiveMarker((prev) => [
-        ...prev,
-        { type: "highlight", page: 2, id: 2 }, // Assuming the first text item on page 1 is the target
-      ]);
-    }, 1000);
-
-    setTimeout(() => {
-      setActiveMarker((prev) => [...prev, { type: "circle", page: 2, id: 14 }]);
-    }, 2000);
-
-    setTimeout(() => {
-      setActiveMarker((prev) => [
-        ...prev,
-        { type: "underline", page: 2, id: 35 },
-        { type: "point", page: 2, id: 33 },
-      ]);
-    }, 3000);
-
-    // Automatically clear it after 4 seconds to mimic the agent moving on
-    setTimeout(() => {
-      setActiveMarker([]);
-    }, 4000);
-  };
-
   return (
-    <>
-      <Document
-        file={pdfUrl || undefined}
-        onLoadSuccess={onDocumentLoadSuccess}
-        loading={<p className="text-white">Loading PDF...</p>}
-        className="w-full h-full"
+    <Document
+      file={pdfUrl || undefined}
+      onLoadSuccess={onDocumentLoadSuccess}
+      loading={<p className="text-white">Loading PDF...</p>}
+      className="w-full h-full"
+    >
+      <Carousel
+        className="overflow-y-scroll p-4 bg-[#0e293c] h-full"
+        setApi={setApi}
+        dir="ltr"
       >
-        <Carousel
-          className="overflow-y-scroll p-4 bg-[#0e293c] h-full"
-          setApi={setApi}
-          dir="ltr"
-        >
-          <CarouselContent className="max-h-[calc(100vh-6rem)] ">
-            {Array.from({ length: numPages }).map((_, index) => {
-              const currentItemPage = index + 1;
+        <CarouselContent className="max-h-[calc(100vh-6rem)] ">
+          {Array.from({ length: numPages }).map((_, index) => {
+            const currentItemPage = index + 1;
 
-              // Render the active page, plus one on the left and one on the right
-              const isVisible = Math.abs(pageNumber - currentItemPage) <= 1;
+            // Render the active page, plus one on the left and one on the right
+            const isVisible = Math.abs(pageNumber - currentItemPage) <= 1;
 
-              return (
-                <CarouselItem key={index} data-page-index={currentItemPage}>
-                  <AspectRatio className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-8rem)]">
-                    {isVisible ? (
-                      <Page
-                        pageNumber={currentItemPage}
-                        scale={scale}
-                        renderTextLayer={true}
-                        // Execute the factory function with the current page
-                        customTextRenderer={
-                          getTextRenderer(currentItemPage) as any
-                        }
-                        renderAnnotationLayer={false}
-                        loading={
-                          <div className="w-full h-full flex items-center justify-center text-slate-500">
-                            Rendering Page...
-                          </div>
-                        }
-                      />
-                    ) : (
-                      /* The Skeleton Fallback */
-                      <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-gray-200">
-                        <div className="animate-pulse flex flex-col items-center">
-                          <div className="h-8 w-8 border-4 border-slate-300 border-t-slate-500 rounded-full animate-spin mb-4"></div>
-                          <p>Preparing Slide {currentItemPage}</p>
+            return (
+              <CarouselItem key={index} data-page-index={currentItemPage}>
+                <AspectRatio className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-8rem)]">
+                  {isVisible ? (
+                    <Page
+                      pageNumber={currentItemPage}
+                      scale={scale}
+                      renderTextLayer={true}
+                      // Execute the factory function with the current page
+                      customTextRenderer={
+                        getTextRenderer(currentItemPage) as any
+                      }
+                      renderAnnotationLayer={false}
+                      loading={
+                        <div className="w-full h-full flex items-center justify-center text-slate-500">
+                          Rendering Page...
                         </div>
+                      }
+                    />
+                  ) : (
+                    /* The Skeleton Fallback */
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-gray-200">
+                      <div className="animate-pulse flex flex-col items-center">
+                        <div className="h-8 w-8 border-4 border-slate-300 border-t-slate-500 rounded-full animate-spin mb-4"></div>
+                        <p>Preparing Slide {currentItemPage}</p>
                       </div>
-                    )}
-                  </AspectRatio>
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4">
-            <CarouselPrevious className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
+                    </div>
+                  )}
+                </AspectRatio>
+              </CarouselItem>
+            );
+          })}
+        </CarouselContent>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4">
+          <CarouselPrevious className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
 
-            <ContentToolbar
-              pageNumber={pageNumber}
-              numPages={numPages}
-              zoom={scale}
-              setZoom={setScale}
-            />
+          <ContentToolbar
+            pageNumber={pageNumber}
+            numPages={numPages}
+            zoom={scale}
+            setZoom={setScale}
+          />
 
-            <CarouselNext className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
-          </div>
-        </Carousel>
-      </Document>
-      <button onClick={handleTestHighlight}>click me</button>
-    </>
+          <CarouselNext className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
+        </div>
+      </Carousel>
+    </Document>
   );
 }

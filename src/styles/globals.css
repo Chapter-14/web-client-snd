@@ -152,7 +152,7 @@
   }
 
   .react-pdf__Page__textContent mark.agent-circle {
-    @apply bg-transparent text-transparent rounded-sm outline outline-2 outline-red-500 outline-offset-[1px];
+    @apply bg-transparent text-transparent rounded-sm outline-2 outline-red-500 outline-offset-[1px];
 
     /* Optional: Keep a pulsing effect on the red box so the user notices it */
     animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;

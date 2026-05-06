@@ -10,3 +10,10 @@ export interface CoursePage {
 }
 
 export type CourseContent = CoursePage[];
+
+// This type represents the structure of the topics JSON file
+export type markerPayload = {
+  type: "highlight" | "circle" | "underline" | "point";
+  page: number;
+  id: number;
+};
