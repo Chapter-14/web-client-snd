@@ -34,7 +34,6 @@ import {
 } from "lucide-react";
 import { Json } from "@/types/database.types";
 import { markerPayload } from "@/types/types";
-import { set } from "zod/v4";
 
 interface Topic {
   name: string;
