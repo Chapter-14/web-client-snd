@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
@@ -42,9 +42,9 @@ export default function Study() {
 
   const supabase = useDatabase();
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -102,7 +102,7 @@ export default function Study() {
       <div className="flex overflow-x-hidden bg-background max-h-screen">
         {/* AI sidebar */}
         <div
-          className={`relative right-0 top-0 bg-card transition-transform duration-300 ease-in-out z-50 xl:w-100 lg:w-75 ${
+          className={`relative right-0 top-0 bg-card transition-transform duration-300 ease-in-out z-50 w-[33.3333%] ${
             sidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
           }`}
           style={{
@@ -123,7 +123,7 @@ export default function Study() {
         </div>
 
         {/* Main Canvas - shrinks when sidebar opens on desktop */}
-        <div className="flex-1 transition-all duration-300 relative h-screen">
+        <div className="flex-1 transition-all duration-300 relative h-screen w-[66.6667%]">
           <PdfCanvas
             pdfUrl={pdfUrl}
             api={api}
