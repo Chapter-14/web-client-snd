@@ -7,7 +7,6 @@ import { useDatabase } from "@/context/databaseContext";
 import { Database, Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { AISideBar } from "@/components/study/aiSideBar";
-import { NavigationMenu } from "@/components/navigation-menu";
 import { markerPayload } from "@/types/types";
 
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
@@ -97,18 +96,9 @@ export default function Study() {
 
   return (
     <>
-      <NavigationMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-
       <div className="flex overflow-x-hidden bg-background max-h-screen">
         {/* AI sidebar */}
-        <div
-          className={`relative right-0 top-0 bg-card transition-transform duration-300 ease-in-out z-50 w-[33.3333%] ${
-            sidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"
-          }`}
-          style={{
-            display: sidebarOpen ? "block" : "none",
-          }}
-        >
+        <div className="relative right-0 top-0 bg-card z-50 w-[33.3333%]">
           <AISideBar
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}

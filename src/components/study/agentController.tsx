@@ -90,6 +90,7 @@ export default function AgentController({
   topicsJSON,
   topicStates,
   setActiveMarker,
+  onSessionEnd,
 }: {
   api: any;
   numPages: number;
@@ -98,6 +99,7 @@ export default function AgentController({
   setActiveMarker: React.Dispatch<
     React.SetStateAction<Record<string, markerPayload>>
   >;
+  onSessionEnd?: (roomName: string) => void;
 }) {
   const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
@@ -454,8 +456,9 @@ export default function AgentController({
         {/* Disconnect Button */}
         <Button
           onClick={() => {
+            if (onSessionEnd) onSessionEnd(room.name);
             disconnectProps.onClick();
-            setActiveMarker({}); // Clear all markers on disconnect
+            setActiveMarker({});
           }}
           disabled={disconnectProps.disabled}
           className="rounded-lg bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center gap-2"
