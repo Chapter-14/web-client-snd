@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Mic,
-  MessageCircle,
   Sparkles,
-  Eye,
   BookOpen,
   GraduationCap,
   Layers,
@@ -15,8 +12,8 @@ import {
   Search,
   Rocket,
   ArrowLeft,
-  Volume2,
 } from "lucide-react";
+import { TutorBenefitsCarousel } from "./_components/tutor-benefits-carousel";
 
 export const metadata: Metadata = {
   title: "سند — مدرسك الخصوصي الذكي",
@@ -34,29 +31,6 @@ function ImagePlaceholder({ label }: { label: string }) {
     </div>
   );
 }
-
-const tutorBenefits = [
-  {
-    icon: Volume2,
-    title: "يشرح لك بصوته",
-    description: "يقرأ المحتوى ويشرحه بطريقة واضحة ومفهومة بالصوت",
-  },
-  {
-    icon: MessageCircle,
-    title: "يجاوبك فوراً",
-    description: "أي سؤال يدور في بالك، سند يجاوبك عليه مباشرة",
-  },
-  {
-    icon: Sparkles,
-    title: "يتكيّف مع أسلوبك",
-    description: "يتعلم طريقتك في الفهم ويقدّم شرح يناسبك",
-  },
-  {
-    icon: Eye,
-    title: "يتابع تقدّمك",
-    description: "يرافقك خطوة بخطوة ويتأكد إنك فهمت كل جزء",
-  },
-];
 
 const features = [
   {
@@ -136,7 +110,7 @@ export default function SanadProductPage() {
           </div>
           <div className="max-w-3xl mx-auto">
             <Image
-              src="/static/screen-shots/agent-page-not-started.png"
+              src="https://snd-zone.b-cdn.net/assets/product-page/image-1.png"
               alt="واجهة سند أثناء جلسة شرح تفاعلية"
               width={1200}
               height={900}
@@ -178,35 +152,7 @@ export default function SanadProductPage() {
               المدرّس الذكي اللي يفهمك ويسمعك
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div>
-              <Image
-                src="/static/screen-shots/agent-page-with-topic.png"
-                alt="واجهة سند أثناء جلسة شرح تفاعلية"
-                width={1200}
-                height={900}
-                className="rounded-2xl shadow-lg shadow-chart-2/20"
-              />
-            </div>
-            <div className="space-y-5">
-              {tutorBenefits.map((benefit) => (
-                <div
-                  key={benefit.title}
-                  className="flex gap-4 items-start bg-card/40 rounded-xl border border-border/30 p-5 hover:border-chart-1/30 transition-colors"
-                >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-chart-2/20 to-chart-1/20 flex items-center justify-center">
-                    <benefit.icon className="w-5 h-5 text-chart-2" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">{benefit.title}</h3>
-                    <p className="text-foreground/60 text-sm leading-relaxed">
-                      {benefit.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <TutorBenefitsCarousel />
         </div>
       </section>
 
@@ -236,7 +182,7 @@ export default function SanadProductPage() {
           </div>
           <div className="mt-14 max-w-2xl mx-auto">
             <Image
-              src="/static/screen-shots/agent-page-no-topic.png"
+              src="https://snd-zone.b-cdn.net/assets/product-page/image-3.png"
               alt="واجهة سند أثناء جلسة شرح تفاعلية"
               width={1200}
               height={900}
