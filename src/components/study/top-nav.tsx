@@ -69,29 +69,31 @@ export function TopNav({
   const displayText = topicName || chapterTitle || "سند";
 
   return (
-    <nav className="flex items-center justify-between w-full h-16 px-6 border-b border-[#1d5479]">
+    <nav className="flex items-center justify-between w-full h-12 sm:h-16 px-3 sm:px-6 border-b border-[#1d5479]">
       {isConnected && topicName ? (
         <button
           onClick={onTopicTitleClick}
-          className="group text-xl font-bold flex items-center gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-white/5"
+          className="group text-sm sm:text-xl font-bold flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 py-1 -ml-2 transition-colors hover:bg-white/5 min-w-0"
         >
-          <span className="border-b border-transparent group-hover:border-[#ffa02f] transition-all duration-200">
-            {displayText}
-          </span>
+          <div className="outline-1 outline-primary rounded-sm flex items-center gap-1.5 sm:gap-2 min-w-0 py-1 px-4">
+            <span className="border-b border-transparent group-hover:border-[#ffa02f] transition-all duration-200 truncate">
+              {displayText}
+            </span>
+            <ChevronDown className="h-4 w-4 text-white/40 group-hover:text-[#ffa02f] transition-colors shrink-0" />
+          </div>
           {(totalSections !== null || currentSectionIndex !== null) && (
             <CompletionCircle
               current={currentSectionIndex}
               total={totalSections}
             />
           )}
-          <ChevronDown className="h-4 w-4 text-white/40 group-hover:text-[#ffa02f] transition-colors" />
         </button>
       ) : (
         <Link
           href="/my-library"
-          className="text-xl font-bold flex items-center gap-2.5"
+          className="text-sm sm:text-xl font-bold flex items-center gap-2 sm:gap-2.5 min-w-0"
         >
-          {displayText}
+          <span className="truncate">{displayText}</span>
           {(totalSections !== null || currentSectionIndex !== null) && (
             <CompletionCircle
               current={currentSectionIndex}
@@ -100,12 +102,12 @@ export function TopNav({
           )}
         </Link>
       )}
-      <div className="flex items-center gap-3">
-        <Button variant="outline" asChild>
-          <Link href="/my-library">المكتبة</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/stats">الإحصائيات</Link>
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <Button asChild size="sm" variant={"default"}>
+          <Link href="/my-library">
+            <span className="hidden sm:inline">المكتبة</span>
+            <span className="sm:hidden">المكتبة</span>
+          </Link>
         </Button>
       </div>
     </nav>

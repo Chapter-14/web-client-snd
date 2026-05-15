@@ -37,7 +37,9 @@ export default function Study() {
 
   const [currentTopicName, setCurrentTopicName] = useState<string | null>(null);
   const [totalSections, setTotalSections] = useState<number | null>(null);
-  const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(null);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number | null>(
+    null,
+  );
   const [showTopicsModal, setShowTopicsModal] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -91,7 +93,11 @@ export default function Study() {
   }, [courseSlug, chapterIndex, supabase]);
 
   const handleTopicChange = useCallback(
-    (topicName: string | null, sections: number | null, sectionIndex: number | null) => {
+    (
+      topicName: string | null,
+      sections: number | null,
+      sectionIndex: number | null,
+    ) => {
       setCurrentTopicName(topicName);
       setTotalSections(sections);
       setCurrentSectionIndex(sectionIndex);
@@ -101,7 +107,13 @@ export default function Study() {
 
   return (
     <>
-      <div className="relative bg-background max-h-screen h-screen">
+      <div
+        className="flex flex-col relative bg-background max-h-screen h-screen overflow-hidden"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+      >
         <TopNav
           topicName={currentTopicName}
           chapterTitle={chapterTitle}

@@ -29,12 +29,12 @@ export function TextInputPopup({
   }, [textInput]);
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center overscroll-contain">
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-md mx-4 bg-[#0a1f2e]/95 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl p-4 animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="relative z-10 w-[calc(100%-1rem)] sm:w-full max-w-md mx-2 sm:mx-4 bg-[#0a1f2e]/95 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl p-3 sm:p-4 animate-in fade-in-0 zoom-in-95 duration-200">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-white/60">اكتب رسالتك</h3>
           <button

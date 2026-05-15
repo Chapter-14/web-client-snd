@@ -291,12 +291,11 @@ export function StudyLauncher({
 
       {/* Launcher */}
       <div
-        className="absolute z-50 transition-all duration-500 ease-out"
-        style={{
-          left: isActive ? "50%" : "2rem",
-          bottom: isActive ? "6rem" : "1rem",
-          transform: isActive ? "translateX(-50%)" : "translateX(0)",
-        }}
+        className={`absolute z-50 transition-all duration-500 ease-out ${
+          isActive
+            ? "left-1/2 -translate-x-1/2 bottom-16 sm:bottom-24"
+            : "left-4 sm:left-8 bottom-4 sm:bottom-4 translate-x-0"
+        }`}
       >
         {showCheckpoint && (
           <CheckpointPopup question={currentCheckpointQuestion!} />
@@ -304,12 +303,9 @@ export function StudyLauncher({
         <div className="flex items-center">
           {/* Right extension — Bar Visualizer */}
           <div
-            className="overflow-hidden transition-all duration-500 ease-out -ml-2"
-            style={{
-              width: extensionsVisible ? "250px" : "0px",
-              height: "40px",
-              opacity: extensionsVisible ? 1 : 0,
-            }}
+            className={`overflow-hidden transition-all duration-500 ease-out -ml-2 ${
+              extensionsVisible ? "w-[160px] sm:w-[250px]" : "w-0"
+            } h-10 ${extensionsVisible ? "opacity-100" : "opacity-0"}`}
           >
             {isConnected && (
               <SessionProvider session={session}>
@@ -356,17 +352,14 @@ export function StudyLauncher({
 
           {/* Left extension — Control Buttons */}
           <div
-            className="overflow-hidden transition-all duration-500 ease-out -mr-2"
-            style={{
-              width: extensionsVisible ? "250px" : "0px",
-              height: "40px",
-              opacity: extensionsVisible ? 1 : 0,
-            }}
+            className={`overflow-hidden transition-all duration-500 ease-out -mr-2 ${
+              extensionsVisible ? "w-[160px] sm:w-[250px]" : "w-0"
+            } h-10 ${extensionsVisible ? "opacity-100" : "opacity-0"}`}
           >
-            <div className="w-[250px] h-full flex items-center justify-center gap-1.5 bg-[#045687] backdrop-blur-md rounded-l-2xl border border-white/10 p-1 shadow-2xl">
+            <div className="w-[160px] sm:w-[250px] h-full flex items-center justify-center gap-1 sm:gap-1.5 bg-[#045687] backdrop-blur-md rounded-l-2xl border border-white/10 p-1 shadow-2xl">
               <button
                 onClick={handleDisconnect}
-                className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-2 transition-colors"
+                className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1.5 sm:p-2 transition-colors"
                 aria-label="Disconnect"
               >
                 <SquareArrowRight className="h-4 w-4" />
@@ -375,7 +368,7 @@ export function StudyLauncher({
               <button
                 onClick={() => micToggleRef.current.toggle()}
                 disabled={micToggleRef.current.pending}
-                className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-2 transition-colors disabled:opacity-50"
+                className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1.5 sm:p-2 transition-colors disabled:opacity-50"
                 aria-label="Toggle microphone"
               >
                 {micToggleRef.current.enabled ? (
@@ -387,7 +380,7 @@ export function StudyLauncher({
 
               <button
                 onClick={toggleAudioMute}
-                className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-2 transition-colors"
+                className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1.5 sm:p-2 transition-colors"
                 aria-label="Toggle audio output"
               >
                 {isAudioMuted ? (
@@ -399,7 +392,7 @@ export function StudyLauncher({
 
               <button
                 onClick={() => setIsTextInputOpen(!isTextInputOpen)}
-                className={`rounded-lg p-2 transition-colors ${
+                className={`rounded-lg p-1.5 sm:p-2 transition-colors ${
                   isTextInputOpen
                     ? "bg-[#ffa02f] text-white"
                     : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"

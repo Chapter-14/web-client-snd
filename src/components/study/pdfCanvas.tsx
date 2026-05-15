@@ -96,10 +96,10 @@ export const PdfCanvas = memo(function PdfCanvas({
       file={pdfUrl || undefined}
       onLoadSuccess={onDocumentLoadSuccess}
       loading={<p className="text-white">Loading PDF...</p>}
-      className="w-full  rounded-lg bg-clip-border max-w-350 mx-auto"
+      className="w-full rounded-lg bg-clip-border max-w-350 mx-auto my-auto md:my-0"
     >
       <Carousel
-        className="overflow-y-scroll p-4 bg-[#0e293c] "
+        className="overflow-y-scroll p-2 sm:p-4 bg-[#0e293c] "
         setApi={setApi}
         dir="ltr"
       >

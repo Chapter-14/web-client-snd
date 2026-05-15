@@ -137,7 +137,7 @@ export function ConnectedStateHandler({
     <>
       <RoomAudioRenderer />
       <div
-        className="w-[250px] h-[40px] bg-[#045687] backdrop-blur-md rounded-r-2xl border border-white/10 p-1 pl-4 shadow-2xl"
+        className="w-[160px] sm:w-[250px] h-[40px] bg-[#045687] backdrop-blur-md rounded-r-2xl border border-white/10 p-1 pl-4 shadow-2xl"
         data-lk-theme="default"
       >
         <BarVisualizer
