@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { Monitor } from "lucide-react";
 import {
   Dialog,
@@ -13,13 +12,22 @@ import {
 import { Button } from "@/components/ui/button";
 
 const PHONE_BREAKPOINT = 640;
+const SESSION_KEY = "mobile-warning-shown";
 
 export function MobileWarningPopup() {
+  const [open, setOpen] = React.useState(false);
   const [isPhone, setIsPhone] = React.useState<boolean | undefined>(undefined);
 
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${PHONE_BREAKPOINT - 1}px)`);
-    const onChange = () => setIsPhone(window.innerWidth < PHONE_BREAKPOINT);
+    const onChange = () => {
+      const phone = window.innerWidth < PHONE_BREAKPOINT;
+      setIsPhone(phone);
+      if (phone && !sessionStorage.getItem(SESSION_KEY)) {
+        sessionStorage.setItem(SESSION_KEY, "1");
+        setOpen(true);
+      }
+    };
     mql.addEventListener("change", onChange);
     onChange();
     return () => mql.removeEventListener("change", onChange);
@@ -28,13 +36,8 @@ export function MobileWarningPopup() {
   if (isPhone === undefined || !isPhone) return null;
 
   return (
-    <Dialog open onOpenChange={() => {}}>
-      <DialogContent
-        showCloseButton={false}
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
-        className="border-accent/20 bg-gradient-to-b from-background to-background  [&>div]:text-center"
-      >
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="border-accent/20 bg-gradient-to-b from-background to-background  [&>div]:text-center">
         <DialogHeader className="items-center gap-4">
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-accent/10 ring-1 ring-accent/20">
             <Monitor className="size-9 text-accent" strokeWidth={1.5} />
@@ -43,12 +46,16 @@ export function MobileWarningPopup() {
             تجربة أفضل على شاشة أكبر
           </DialogTitle>
           <DialogDescription className="text-balance leading-relaxed">
-            الموقع غير مُحسّن بعد للشاشات الصغيرة. للحصول على أفضل تجربة، يرجى
-            استخدام الحاسوب أو جهاز لوحي.
+            لتجربة افضل ننصحك باستخدام جهاز بشاشة أكبر مثل اللابتوب او الايباد.
+            يمكنك الاستمرار في استخدام الموقع على هاتفك اذا اردت.
           </DialogDescription>
         </DialogHeader>
-        <Button asChild size="lg" className="mt-2 w-full">
-          <Link href="/sanad">تعرف على سند</Link>
+        <Button
+          size="lg"
+          className="mt-2 w-full"
+          onClick={() => setOpen(false)}
+        >
+          فهمت
         </Button>
       </DialogContent>
     </Dialog>

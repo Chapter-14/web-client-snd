@@ -1,3 +1,5 @@
+import { CarouselApi } from "@/components/ui/carousel";
+import { Json } from "./database.types";
 export interface PageContentChunk {
   id: string;
   type: "paragraph" | "equation" | string;
@@ -23,3 +25,69 @@ export type UIMarkersUpdates = {
   add: { [key: string]: markerPayload };
   remove: string[];
 };
+
+// Agent UI control data structure
+
+export type LauncherState = "idle" | "menu-open" | "active";
+
+export interface Topic {
+  name: string;
+  brief: string;
+  slug: string;
+}
+
+export type TopicState = "not_started" | "current" | "done";
+
+export interface UIControlData {
+  action: string;
+  page?: number;
+  topic?: string;
+  section?: string;
+  number_of_sections?: number;
+  current_section_index?: number;
+  checkpoint_question?: string;
+  add?: { [key: string]: markerPayload };
+  remove?: string[];
+}
+
+export interface StudyLauncherProps {
+  api: CarouselApi | null;
+  numPages: number;
+  topicsJSON: Json;
+  courseSlug: string;
+  chapterIndex: number;
+  showTopicsModal: boolean;
+  onShowTopicsModalChange: (show: boolean) => void;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
+  onTopicChange?: (
+    topicName: string | null,
+    sections: number | null,
+    sectionIndex: number | null,
+  ) => void;
+  onConnectedChange?: (connected: boolean) => void;
+}
+
+export interface ConnectedStateHandlerProps {
+  api: CarouselApi | null;
+  numPages: number;
+  topicsJSON: Json;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
+  onAgentStateChange: (state: string) => void;
+  onTopicNameChange: (name: string | null) => void;
+  onSectionsChange: (total: number | null, index: number | null) => void;
+  onCheckpointChange: (question: string | null) => void;
+  onDisconnect: (roomName: string) => void;
+  onMicToggleChange: (toggle: {
+    toggle: () => void;
+    enabled: boolean;
+    pending: boolean;
+  }) => void;
+  onDisconnectPropsChange: (props: {
+    onClick: () => void;
+    disabled: boolean;
+  }) => void;
+}
