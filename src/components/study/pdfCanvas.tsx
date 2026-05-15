@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ContentToolbar } from "@/components/study/contentToolBar";
@@ -17,7 +17,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import "react-pdf/dist/Page/TextLayer.css";
 // import "@/styles/AnnotationLayer.css";
 
-export function PdfCanvas({
+export const PdfCanvas = memo(function PdfCanvas({
   pdfUrl,
   api,
   setApi,
@@ -158,4 +158,4 @@ export function PdfCanvas({
       </Carousel>
     </Document>
   );
-}
+});
