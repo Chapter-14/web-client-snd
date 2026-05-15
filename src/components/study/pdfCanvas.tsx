@@ -6,8 +6,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { markerPayload } from "@/types/types";
@@ -98,14 +96,22 @@ export function PdfCanvas({
       file={pdfUrl || undefined}
       onLoadSuccess={onDocumentLoadSuccess}
       loading={<p className="text-white">Loading PDF...</p>}
-      className="w-full h-full"
+      className="w-full  rounded-lg bg-clip-border max-w-350 mx-auto"
     >
       <Carousel
-        className="overflow-y-scroll p-4 bg-[#0e293c] h-full"
+        className="overflow-y-scroll p-4 bg-[#0e293c] "
         setApi={setApi}
         dir="ltr"
       >
-        <CarouselContent className="max-h-[calc(100vh-6rem)] ">
+        <div className="md:mb-[-8] mb-2 z-20 flex items-center justify-center relative mx-auto">
+          <ContentToolbar
+            pageNumber={pageNumber}
+            numPages={numPages}
+            zoom={scale}
+            setZoom={setScale}
+          />
+        </div>
+        <CarouselContent className=" ">
           {Array.from({ length: numPages }).map((_, index) => {
             const currentItemPage = index + 1;
 
@@ -115,8 +121,8 @@ export function PdfCanvas({
             return (
               <CarouselItem key={index} data-page-index={currentItemPage}>
                 <AspectRatio
-                  ratio={5 / 3}
-                  className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-8rem)]"
+                  ratio={16 / 9}
+                  className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10"
                 >
                   {isVisible && containerWidth > 0 ? (
                     <Page
@@ -149,18 +155,6 @@ export function PdfCanvas({
             );
           })}
         </CarouselContent>
-        <div className="mt-2 flex items-center gap-4 w-fit justify-center relative mx-auto">
-          <CarouselPrevious className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
-
-          <ContentToolbar
-            pageNumber={pageNumber}
-            numPages={numPages}
-            zoom={scale}
-            setZoom={setScale}
-          />
-
-          <CarouselNext className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
-        </div>
       </Carousel>
     </Document>
   );

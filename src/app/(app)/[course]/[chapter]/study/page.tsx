@@ -8,6 +8,7 @@ import { Database, Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { AISideBar } from "@/components/study/aiSideBar";
 import { markerPayload } from "@/types/types";
+import { TopNav } from "@/components/study/top-nav";
 
 type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
 
@@ -26,9 +27,6 @@ export default function Study() {
   );
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-  // control sidebar visibility
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
   // Carosel control state
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
@@ -40,12 +38,6 @@ export default function Study() {
   >({});
 
   const supabase = useDatabase();
-
-  const toggleSidebar = useCallback(() => {
-    setSidebarOpen((prev) => !prev);
-  }, []);
-
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // Fetch chapter material
@@ -96,12 +88,11 @@ export default function Study() {
 
   return (
     <>
-      <div className="flex overflow-x-hidden bg-background max-h-screen">
-        {/* AI sidebar */}
-        {/* <div className="relative right-0 top-0 bg-card z-50 w-[33.3333%]">
+      <div className=" bg-background max-h-screen">
+        <TopNav topicName={topicsJSON?.title || "Topic Name"} />
+        {/* <div className="flex overflow-x-hidden">
+          <div className="relative right-0 top-0 bg-card z-50 w-[33.3333%]">
           <AISideBar
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
             api={api}
             numPages={numPages}
             topicsJSON={topicsJSON}
@@ -110,10 +101,11 @@ export default function Study() {
             setMenuOpen={setMenuOpen}
             setActiveMarker={setActiveMarker}
           />
-        </div> */}
+        </div>
 
+        </div> */}
         {/* Main Canvas - shrinks when sidebar opens on desktop */}
-        <div className="flex-1 transition-all duration-300 relative h-screen w-[66.6667%]">
+        <div className="flex-1 transition-all duration-300 relative">
           <PdfCanvas
             pdfUrl={pdfUrl}
             api={api}
