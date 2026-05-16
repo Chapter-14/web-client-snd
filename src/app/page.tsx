@@ -8,62 +8,15 @@ import {
   GraduationCap,
   Layers,
   Zap,
-  UserPlus,
-  Search,
-  Rocket,
   ArrowLeft,
-  MessageCircle,
 } from "lucide-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "سند | مدرس خصوصي بالذكاء الاصطناعي",
   description:
     "مساعد صوتي ذكي يرافقك في كل جلسة دراسية، يشرح لك بطريقة تفهمها، يجاوب على أسئلتك، ويتابع معك خطوة بخطوة",
 };
-
-const features = [
-  {
-    icon: BookOpen,
-    title: "تصفح موادك الدراسية",
-    description: "كل المواد منظمة حسب جامعتك وتخصصك، جاهزة للمذاكرة",
-  },
-  {
-    icon: GraduationCap,
-    title: "تجربة تعلّم شخصية",
-    description: "سند يتعلم أسلوبك وسرعتك ويقدّم لك تجربة فريدة",
-  },
-  {
-    icon: Layers,
-    title: "محتوى تفاعلي",
-    description: "شرائح وملازم تقدر تتفاعل معها أثناء الشرح",
-  },
-  {
-    icon: Zap,
-    title: "سهل الاستخدام",
-    description: "واجهة بسيطة وواضحة تخلّيك تركز على المذاكرة",
-  },
-];
-
-const steps = [
-  {
-    number: "1",
-    icon: UserPlus,
-    title: "أنشئ حسابك",
-    description: "سجّل في دقيقة واحدة وابدأ رحلتك",
-  },
-  {
-    number: "2",
-    icon: Search,
-    title: "اختر مادتك الدراسية",
-    description: "اختر جامعتك ومادتك من القائمة المتاحة",
-  },
-  {
-    number: "3",
-    icon: Rocket,
-    title: "ابدأ التعلم مع سند",
-    description: "سند يبدأ يشرح لك ويجاوب أسئلتك مباشرة",
-  },
-];
 
 const heroPills = [
   { icon: GraduationCap, label: "تجربة تعلّم شخصية" },
@@ -74,7 +27,7 @@ const heroPills = [
 export default function Home() {
   return (
     <div className="bg-background text-foreground" dir="rtl">
-      <div className="relative overflow-hidden h-dvh flex flex-col min-h-[500px]">
+      <div className="relative overflow-hidden h-dvh flex flex-col min-h-125">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
             className="absolute top-[-10%] right-[15%] w-[500px] h-[500px] bg-chart-1/[0.06] rounded-full blur-[120px]"
@@ -120,7 +73,7 @@ export default function Home() {
               Chapter-14
             </span>
             <Link href="/about" className="hover:opacity-80 transition-opacity">
-              <img
+              <Image
                 src="/static/logo.png"
                 alt="Chapter-14"
                 width={40}
@@ -136,10 +89,12 @@ export default function Home() {
             <div className="text-center space-y-3 sm:space-y-4">
               <div className="flex justify-center mb-2">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-chart-2/20 to-chart-1/20 p-3 ring-1 ring-chart-2/20">
-                  <img
+                  <Image
                     src="/static/logo.png"
                     alt="سند"
-                    className="w-full h-full object-contain"
+                    className=" object-contain"
+                    width={100}
+                    height={100}
                   />
                 </div>
               </div>
@@ -172,18 +127,18 @@ export default function Home() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <Link
-                  href="/enroll"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-chart-2 to-chart-1 text-white px-8 py-4 sm:px-10 sm:py-5 rounded-xl font-bold text-base sm:text-lg hover:opacity-90 transition-opacity shadow-xl shadow-chart-2/25 hover:shadow-2xl hover:shadow-chart-2/30"
-                >
-                  ابدأ رحلتك التعليمية
-                  <ArrowLeft className="w-5 h-5" />
-                </Link>
-                <Link
                   href="/sanad"
-                  className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground border border-border/30 hover:border-border/50 px-6 py-3 sm:py-4 rounded-xl font-medium text-sm sm:text-base transition-colors"
+                  className="inline-flex items-center gap-2 hover:outline-foreground/70 hover:outline-2 text-foreground/70 hover:text-foreground border border-border/30 hover:border-border/50 px-8 py-2 sm:px-10 sm:py-4 rounded-xl font-medium text-sm sm:text-base transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   تعرّف على سند
+                </Link>
+                <Link
+                  href="/enroll"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-chart-2 to-chart-1 text-white px-8 py-2 sm:px-10 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:opacity-90 transition-opacity shadow-xl shadow-chart-2/25 hover:shadow-2xl hover:shadow-chart-2/30"
+                >
+                  ابدأ مع سند الان
+                  <ArrowLeft className="w-5 h-5" />
                 </Link>
               </div>
               <span className="text-xs text-muted-foreground/60">
