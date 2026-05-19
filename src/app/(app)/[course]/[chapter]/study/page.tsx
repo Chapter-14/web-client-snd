@@ -8,7 +8,7 @@ import { Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
 import { markerPayload, Topic } from "@/types/types";
 import { TopNav } from "@/components/study/top-nav";
-import { StudyLauncher } from "@/components/study/study-launcher";
+import { AgentLauncher } from "@/components/study/agent-launcher";
 
 export default function Study() {
   const params = useParams<{
@@ -96,7 +96,7 @@ export default function Study() {
         }}
       >
         <TopNav chapterTitle={chapterTitle} />
-        <StudyLauncher
+        <AgentLauncher
           api={api}
           numPages={numPages}
           topics={topics}

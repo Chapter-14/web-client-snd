@@ -9,16 +9,24 @@ import {
   BarVisualizer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   RoomEvent,
   RemoteParticipant,
   DataPacket_Kind,
   Track,
 } from "livekit-client";
+import {
+  Mic,
+  MicOff,
+  SquareArrowRight,
+  Volume2,
+  VolumeX,
+  Keyboard,
+} from "lucide-react";
 import { ConnectedStateHandlerProps, UIControlData } from "@/types/types";
 
-export function ConnectedStateHandler({
+export function SessionManager({
   api,
   numPages,
   setSelectedTopic,
@@ -26,8 +34,9 @@ export function ConnectedStateHandler({
   setActiveMarker,
   onAgentStateChange,
   onCheckpointChange,
-  onMicToggleChange,
-  onDisconnectPropsChange,
+  onDisconnect,
+  onTextInputToggle,
+  isTextInputOpen,
 }: ConnectedStateHandlerProps) {
   const { state: agentState, audioTrack } = useVoiceAssistant();
   const room = useRoomContext();
@@ -36,18 +45,30 @@ export function ConnectedStateHandler({
     stopTracks: true,
   });
   const pendingTimeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
 
   useEffect(() => {
     onAgentStateChange(agentState);
   }, [agentState, onAgentStateChange]);
 
-  useEffect(() => {
-    onMicToggleChange(micToggle);
-  }, [micToggle, onMicToggleChange]);
+  const handleDisconnect = useCallback(() => {
+    disconnectProps.onClick();
+    onDisconnect();
+  }, [disconnectProps, onDisconnect]);
 
-  useEffect(() => {
-    onDisconnectPropsChange(disconnectProps);
-  }, [disconnectProps, onDisconnectPropsChange]);
+  const toggleAudioMute = useCallback(() => {
+    const remoteParticipants = Array.from(
+      room.remoteParticipants.values(),
+    );
+    remoteParticipants.forEach((participant) => {
+      participant.audioTrackPublications.forEach((publication) => {
+        if (publication.track) {
+          publication.track.setMuted(!isAudioMuted);
+        }
+      });
+    });
+    setIsAudioMuted((prev) => !prev);
+  }, [room, isAudioMuted]);
 
   useEffect(() => {
     const handleData = (
@@ -67,8 +88,6 @@ export function ConnectedStateHandler({
           }
         } else if (data.action === "set_topic") {
           if (data.topic) {
-            // onTopicNameChange(data.topic);
-            // onSectionsChange(data.number_of_sections || null, null);
             setSelectedTopic({
               slug: data.topic,
               totalSections: data.number_of_sections || 0,
@@ -125,11 +144,57 @@ export function ConnectedStateHandler({
       }
       pendingTimeouts.current = [];
     };
-  }, [room, api, numPages, setActiveMarker, onCheckpointChange]);
+  }, [room, api, numPages, setActiveMarker, setSelectedTopic, setSelectedSection, onCheckpointChange]);
 
   return (
     <>
       <RoomAudioRenderer />
+      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <button
+          onClick={handleDisconnect}
+          className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 transition-colors"
+          aria-label="Disconnect"
+        >
+          <SquareArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </button>
+
+        <button
+          onClick={() => micToggle.toggle()}
+          disabled={micToggle.pending}
+          className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1 sm:p-1.5 transition-colors disabled:opacity-50"
+          aria-label="Toggle microphone"
+        >
+          {micToggle.enabled ? (
+            <Mic className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          ) : (
+            <MicOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          )}
+        </button>
+
+        <button
+          onClick={toggleAudioMute}
+          className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1 sm:p-1.5 transition-colors"
+          aria-label="Toggle audio output"
+        >
+          {isAudioMuted ? (
+            <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          ) : (
+            <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          )}
+        </button>
+
+        <button
+          onClick={onTextInputToggle}
+          className={`rounded-lg p-1 sm:p-1.5 transition-colors ${
+            isTextInputOpen
+              ? "bg-[#ffa02f] text-white"
+              : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
+          }`}
+          aria-label="Toggle text input"
+        >
+          <Keyboard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </button>
+      </div>
       <div
         className="w-[80px] sm:w-[140px] md:w-[200px] h-[36px] sm:h-[40px] bg-[#045687] p-1 pl-2 sm:pl-4"
         data-lk-theme="default"

@@ -79,14 +79,7 @@ export interface ConnectedStateHandlerProps {
   >;
   onAgentStateChange: (state: string) => void;
   onCheckpointChange: (question: string | null) => void;
-  onMicToggleChange: (toggle: {
-    toggle: () => void;
-    enabled: boolean;
-    pending: boolean;
-  }) => void;
-
-  onDisconnectPropsChange: (props: {
-    onClick: () => void;
-    disabled: boolean;
-  }) => void;
+  onDisconnect: () => void;
+  onTextInputToggle: () => void;
+  isTextInputOpen: boolean;
 }

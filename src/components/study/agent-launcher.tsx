@@ -2,12 +2,6 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import {
-  Mic,
-  MicOff,
-  SquareArrowRight,
-  Volume2,
-  VolumeX,
-  Keyboard,
   Circle,
   ChevronDown,
 } from "lucide-react";
@@ -19,7 +13,7 @@ import { LauncherState, StudyLauncherProps } from "@/types/types";
 import { TextInputPopup } from "@/components/study/text-input-popup";
 import { CheckpointPopup } from "@/components/study/checkpoint-popup";
 import { MenuPopup } from "@/components/study/menu-popup";
-import { ConnectedStateHandler } from "@/components/study/connected-state-handler";
+import { SessionManager } from "@/components/study/session-manager";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CompletionCircle } from "@/components/study/completionCircle";
 
-export function StudyLauncher({
+export function AgentLauncher({
   api,
   numPages,
   topics,
@@ -45,12 +39,6 @@ export function StudyLauncher({
 
   const [agentState, setAgentState] = useState<string>("disconnected");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const disconnectPropsRef = useRef<{ onClick: () => void; disabled: boolean }>(
-    {
-      onClick: () => {},
-      disabled: false,
-    },
-  );
   const sendingRef = useRef(false);
   const sendUserMessageRef = useRef<(message: string) => Promise<void>>(
     async () => {},
@@ -58,12 +46,10 @@ export function StudyLauncher({
   const [currentCheckpointQuestion, setCurrentCheckpointQuestion] = useState<
     string | null
   >(null);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isTextInputOpen, setIsTextInputOpen] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [isSending, setIsSending] = useState(false);
 
-  // Selected topics state management
   const [selectedTopic, setSelectedTopic] = useState<{
     slug: string;
     totalSections: number;
@@ -72,19 +58,6 @@ export function StudyLauncher({
     name: string;
     index: number;
   } | null>(null);
-
-  const micStateRef = useRef<{
-    toggle: () => void;
-    enabled: boolean;
-    pending: boolean;
-  }>({
-    toggle: () => {},
-    enabled: true,
-    pending: false,
-  });
-
-  const [micEnabled, setMicEnabled] = useState(true);
-  const [micPending, setMicPending] = useState(false);
 
   const tokenSource = useMemo(
     () =>
@@ -175,23 +148,7 @@ export function StudyLauncher({
     setIsTextInputOpen(false);
   }, [textInput]);
 
-  const toggleAudioMute = useCallback(() => {
-    if (!session.room) return;
-    const remoteParticipants = Array.from(
-      session.room.remoteParticipants.values(),
-    );
-    remoteParticipants.forEach((participant) => {
-      participant.audioTrackPublications.forEach((publication) => {
-        if (publication.track) {
-          publication.track.setMuted(!isAudioMuted);
-        }
-      });
-    });
-    setIsAudioMuted(!isAudioMuted);
-  }, [session.room, isAudioMuted]);
-
   const handleDisconnect = useCallback(() => {
-    disconnectPropsRef.current.onClick();
     setActiveMarker({});
     setLauncherState("idle");
     setDropdownOpen(false);
@@ -201,15 +158,6 @@ export function StudyLauncher({
     setSelectedTopic(null);
     setSelectedSection(null);
   }, [setActiveMarker]);
-
-  const handleMicToggleChange = useCallback(
-    (toggle: { toggle: () => void; enabled: boolean; pending: boolean }) => {
-      micStateRef.current = toggle;
-      setMicEnabled(toggle.enabled);
-      setMicPending(toggle.pending);
-    },
-    [],
-  );
 
   const handleLanguageChange = useCallback((val: "English" | "Arabic") => {
     setLanguage(val);
@@ -222,13 +170,6 @@ export function StudyLauncher({
   const handleTextInputToggle = useCallback(() => {
     setIsTextInputOpen((prev) => !prev);
   }, []);
-
-  const handleDisconnectPropsChange = useCallback(
-    (props: { onClick: () => void; disabled: boolean }) => {
-      disconnectPropsRef.current = props;
-    },
-    [],
-  );
 
   const isAgentListening = agentState === "listening";
   const isActive = launcherState === "active";
@@ -313,55 +254,8 @@ export function StudyLauncher({
             </DropdownMenu>
 
             <div className="flex items-center gap-1 sm:contents">
-              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                <button
-                  onClick={handleDisconnect}
-                  className="rounded-lg bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 transition-colors"
-                  aria-label="Disconnect"
-                >
-                  <SquareArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </button>
-
-                <button
-                  onClick={() => micStateRef.current.toggle()}
-                  disabled={micPending}
-                  className="rounded-lg bg-[#ffa02f] hover:bg-[#ff8c1a] text-white p-1 sm:p-1.5 transition-colors disabled:opacity-50"
-                  aria-label="Toggle microphone"
-                >
-                  {micEnabled ? (
-                    <Mic className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  ) : (
-                    <MicOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  )}
-                </button>
-
-                <button
-                  onClick={toggleAudioMute}
-                  className="rounded-lg bg-[#1d5479] hover:bg-[#1d5479]/80 text-white p-1 sm:p-1.5 transition-colors"
-                  aria-label="Toggle audio output"
-                >
-                  {isAudioMuted ? (
-                    <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  ) : (
-                    <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  )}
-                </button>
-
-                <button
-                  onClick={handleTextInputToggle}
-                  className={`rounded-lg p-1 sm:p-1.5 transition-colors ${
-                    isTextInputOpen
-                      ? "bg-[#ffa02f] text-white"
-                      : "bg-[#1d5479] hover:bg-[#1d5479]/80 text-white"
-                  }`}
-                  aria-label="Toggle text input"
-                >
-                  <Keyboard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </button>
-              </div>
-
               <SessionProvider session={session}>
-                <ConnectedStateHandler
+                <SessionManager
                   api={api}
                   numPages={numPages}
                   setSelectedTopic={setSelectedTopic}
@@ -369,8 +263,9 @@ export function StudyLauncher({
                   setActiveMarker={setActiveMarker}
                   onAgentStateChange={handleAgentStateChange}
                   onCheckpointChange={setCurrentCheckpointQuestion}
-                  onMicToggleChange={handleMicToggleChange}
-                  onDisconnectPropsChange={handleDisconnectPropsChange}
+                  onDisconnect={handleDisconnect}
+                  onTextInputToggle={handleTextInputToggle}
+                  isTextInputOpen={isTextInputOpen}
                 />
               </SessionProvider>
             </div>
