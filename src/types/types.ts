@@ -1,3 +1,5 @@
+import { CarouselApi } from "@/components/ui/carousel";
+import { Json } from "./database.types";
 export interface PageContentChunk {
   id: string;
   type: "paragraph" | "equation" | string;
@@ -23,3 +25,61 @@ export type UIMarkersUpdates = {
   add: { [key: string]: markerPayload };
   remove: string[];
 };
+
+// Agent UI control data structure
+
+export type LauncherState = "idle" | "menu-open" | "active";
+
+export interface Topic {
+  name: string;
+  brief: string;
+  slug: string;
+}
+
+export type TopicState = "not_started" | "current";
+
+export interface UIControlData {
+  action: string;
+  page?: number;
+  topic?: string;
+  section?: string;
+  number_of_sections?: number;
+  current_section_index?: number;
+  checkpoint_question?: string;
+  add?: { [key: string]: markerPayload };
+  remove?: string[];
+}
+
+export interface StudyLauncherProps {
+  api: CarouselApi | null;
+  numPages: number;
+  topics: Topic[];
+  courseSlug: string;
+  chapterIndex: number;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
+  onListeningChange?: (listening: boolean) => void;
+}
+
+export interface ConnectedStateHandlerProps {
+  api: CarouselApi | null;
+  numPages: number;
+  setSelectedTopic: React.Dispatch<
+    React.SetStateAction<{
+      slug: string;
+      totalSections: number;
+    } | null>
+  >;
+  setSelectedSection: React.Dispatch<
+    React.SetStateAction<{ name: string; index: number } | null>
+  >;
+  setActiveMarker: React.Dispatch<
+    React.SetStateAction<Record<string, markerPayload>>
+  >;
+  onAgentStateChange: (state: string) => void;
+  onCheckpointChange: (question: string | null) => void;
+  onDisconnect: () => void;
+  onTextInputToggle: () => void;
+  isTextInputOpen: boolean;
+}

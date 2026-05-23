@@ -1,16 +1,19 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { Loader2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ContentToolbar } from "@/components/study/contentToolBar";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { markerPayload } from "@/types/types";
+import {
+  PdfDocumentLoading,
+  PdfPageLoading,
+} from "@/components/study/loadings/pdfCanvasLoading";
 
 // 1. Configure the worker to use a CDN (easiest setup)
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -19,7 +22,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import "react-pdf/dist/Page/TextLayer.css";
 // import "@/styles/AnnotationLayer.css";
 
-export function PdfCanvas({
+export const PdfCanvas = memo(function PdfCanvas({
   pdfUrl,
   api,
   setApi,
@@ -36,6 +39,27 @@ export function PdfCanvas({
 }) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  useEffect(() => {
+    if (!api) return;
+    const measure = () => {
+      const slides = api.slideNodes();
+      if (slides.length > 0) {
+        const style = getComputedStyle(slides[0]);
+        const paddingH =
+          parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+        setContainerWidth(slides[0].clientWidth - paddingH);
+      }
+    };
+    measure();
+    const container = api.containerNode();
+    if (container) {
+      const observer = new ResizeObserver(measure);
+      observer.observe(container);
+      return () => observer.disconnect();
+    }
+  }, [api]);
 
   // Agent page control logic
   useEffect(() => {
@@ -53,22 +77,27 @@ export function PdfCanvas({
   }
 
   const getTextRenderer = useCallback(
-    (renderPageNumber: number) => (props: any) => {
-      const str = props?.str || props?.textItem?.str;
-      const itemIndex = props?.itemIndex;
+    (renderPageNumber: number) =>
+      (props: {
+        str?: string;
+        textItem?: { str?: string };
+        itemIndex?: number;
+      }) => {
+        const str = props?.str || props?.textItem?.str;
+        const itemIndex = props?.itemIndex;
 
-      if (typeof str !== "string" || typeof itemIndex !== "number") {
-        return "";
-      }
-
-      for (const { type, page, span_id } of Object.values(activeMarker)) {
-        if (page === renderPageNumber && span_id === itemIndex) {
-          return `<mark class="agent-${type}" id="pdf-mark-${renderPageNumber}-${itemIndex}">${str}</mark>`;
+        if (typeof str !== "string" || typeof itemIndex !== "number") {
+          return "";
         }
-      }
 
-      return `<span id="pdf-span-${renderPageNumber}-${itemIndex}">${str}</span>`;
-    },
+        for (const { type, page, span_id } of Object.values(activeMarker)) {
+          if (page === renderPageNumber && span_id === itemIndex) {
+            return `<mark class="agent-${type}" id="pdf-mark-${renderPageNumber}-${itemIndex}">${str}</mark>`;
+          }
+        }
+
+        return `<span id="pdf-span-${renderPageNumber}-${itemIndex}">${str}</span>`;
+      },
     [activeMarker],
   );
 
@@ -76,15 +105,15 @@ export function PdfCanvas({
     <Document
       file={pdfUrl || undefined}
       onLoadSuccess={onDocumentLoadSuccess}
-      loading={<p className="text-white">Loading PDF...</p>}
-      className="w-full h-full"
+      loading={<PdfDocumentLoading />}
+      className="w-full bg-clip-border max-w-270 mx-auto mb-auto"
     >
       <Carousel
-        className="overflow-y-scroll p-4 bg-[#0e293c] h-full"
+        className="overflow-y-scroll pb-2 px-2 sm:px-4 sm:pb-4 bg-secondary rounded-b-lg "
         setApi={setApi}
         dir="ltr"
       >
-        <CarouselContent className="max-h-[calc(100vh-6rem)] ">
+        <CarouselContent className=" ">
           {Array.from({ length: numPages }).map((_, index) => {
             const currentItemPage = index + 1;
 
@@ -93,30 +122,31 @@ export function PdfCanvas({
 
             return (
               <CarouselItem key={index} data-page-index={currentItemPage}>
-                <AspectRatio className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10 max-h-[calc(100vh-8rem)]">
-                  {isVisible ? (
+                <AspectRatio
+                  ratio={16 / 9}
+                  className="bg-gray-300 mx-auto overflow-y-auto flex justify-center scrollbar-show-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400/60 scrollbar-track-gray-200/10"
+                >
+                  {isVisible && containerWidth > 0 ? (
                     <Page
                       pageNumber={currentItemPage}
+                      width={containerWidth}
                       scale={scale}
                       renderTextLayer={true}
                       // Execute the factory function with the current page
                       customTextRenderer={
-                        getTextRenderer(currentItemPage) as any
+                        getTextRenderer(currentItemPage) as (
+                          props: Record<string, unknown>,
+                        ) => string
                       }
                       renderAnnotationLayer={false}
-                      loading={
-                        <div className="w-full h-full flex items-center justify-center text-slate-500">
-                          Rendering Page...
-                        </div>
-                      }
+                      loading={<PdfPageLoading />}
                     />
                   ) : (
-                    /* The Skeleton Fallback */
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-gray-200">
-                      <div className="animate-pulse flex flex-col items-center">
-                        <div className="h-8 w-8 border-4 border-slate-300 border-t-slate-500 rounded-full animate-spin mb-4"></div>
-                        <p>Preparing Slide {currentItemPage}</p>
-                      </div>
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[#132f45]">
+                      <Loader2 className="size-7 text-slate-400 animate-spin" />
+                      <span className="text-xs text-slate-500">
+                        شريحة {currentItemPage}
+                      </span>
                     </div>
                   )}
                 </AspectRatio>
@@ -124,19 +154,15 @@ export function PdfCanvas({
             );
           })}
         </CarouselContent>
-        <div className="mt-2 flex items-center gap-4 w-fit justify-center relative mx-auto">
-          <CarouselPrevious className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
-
+        <div className=" mt-2 z-20 flex items-center justify-center relative mx-auto">
           <ContentToolbar
             pageNumber={pageNumber}
             numPages={numPages}
             zoom={scale}
             setZoom={setScale}
           />
-
-          <CarouselNext className="p-2 rounded-full bg-[#1d5479] text-[#fffdff] hover:bg-[#ffa02f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1d5479]" />
         </div>
       </Carousel>
     </Document>
   );
-}
+});

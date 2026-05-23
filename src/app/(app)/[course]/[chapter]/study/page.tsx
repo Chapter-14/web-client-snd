@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { PdfCanvas } from "@/components/study/pdfCanvas";
 import { useParams } from "next/navigation";
 import { useDatabase } from "@/context/databaseContext";
-import { Database, Json } from "@/types/database.types";
+import { Json } from "@/types/database.types";
 import { CarouselApi } from "@/components/ui/carousel";
-import { AISideBar } from "@/components/study/aiSideBar";
-import { markerPayload } from "@/types/types";
-
-type Chapter = Database["public"]["Tables"]["chapters"]["Row"];
+import { markerPayload, Topic } from "@/types/types";
+import { TopNav } from "@/components/study/top-nav";
+import { AgentLauncher } from "@/components/study/agent-launcher";
 
 export default function Study() {
-  // Get chapter ID from URL params
   const params = useParams<{
     course: string | string[];
     chapter: string | string[];
@@ -25,49 +23,38 @@ export default function Study() {
     Array.isArray(params.chapter) ? params.chapter[0] : params.chapter || "1",
   );
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [chapterTitle, setChapterTitle] = useState<string | null>(null);
 
-  // control sidebar visibility
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  // Carosel control state
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
-  const [topicsJSON, setTopicsJSON] = useState<Json>({});
+  const [topics, setTopics] = useState<Topic[]>([]);
 
-  // State to track agent markers
   const [activeMarker, setActiveMarker] = useState<
     Record<string, markerPayload>
   >({});
 
   const supabase = useDatabase();
 
-  const toggleSidebar = useCallback(() => {
-    setSidebarOpen((prev) => !prev);
-  }, []);
-
-  const [menuOpen, setMenuOpen] = useState(false);
-
   useEffect(() => {
-    // Fetch chapter material
     async function fetchChapterPDF() {
-      const { data: chapter, error }: { data: Chapter | null; error: any } =
-        await supabase
-          .from("chapters")
-          .select(
-            `
+      const { data: chapter, error } = await supabase
+        .from("chapters")
+        .select(
+          `
           *,
           courses!inner(slug)
         `,
-          )
-          .eq("courses.slug", courseSlug)
-          .eq("order_index", chapterIndex) // Optional: add if you want a specific chapter
-          .single();
+        )
+        .eq("courses.slug", courseSlug)
+        .eq("order_index", chapterIndex)
+        .single();
 
       if (error) {
         console.error("Error fetching courses:", error);
         return { pdf_url: null };
       }
       setPdfUrl(chapter?.pdf_url || null);
+      setChapterTitle(chapter?.title || null);
     }
 
     async function fetchTopicsJSON() {
@@ -82,7 +69,7 @@ export default function Study() {
           throw new Error(data.error);
         }
 
-        setTopicsJSON(data);
+        setTopics(data?.topics || []);
       } catch (error) {
         console.error("Error fetching in course JSON:", error);
       }
@@ -95,35 +82,35 @@ export default function Study() {
   }, [courseSlug, chapterIndex, supabase]);
 
   return (
-    <>
-      <div className="flex overflow-x-hidden bg-background max-h-screen">
-        {/* AI sidebar */}
-        <div className="relative right-0 top-0 bg-card z-50 w-[33.3333%]">
-          <AISideBar
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-            api={api}
-            numPages={numPages}
-            topicsJSON={topicsJSON}
-            courseSlug={courseSlug}
-            chapterIndex={chapterIndex}
-            setMenuOpen={setMenuOpen}
-            setActiveMarker={setActiveMarker}
-          />
-        </div>
-
-        {/* Main Canvas - shrinks when sidebar opens on desktop */}
-        <div className="flex-1 transition-all duration-300 relative h-screen w-[66.6667%]">
-          <PdfCanvas
-            pdfUrl={pdfUrl}
-            api={api}
-            setApi={setApi}
-            numPages={numPages}
-            setNumPages={setNumPages}
-            activeMarker={activeMarker}
-          />
-        </div>
-      </div>
-    </>
+    <div
+      className="flex flex-col relative max-h-[130vh] min-h-svh overflow-hidden items-center bg-background"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        backgroundImage: "url('/static/assets/texture-gold.png')",
+        backgroundBlendMode: "lighten",
+        backgroundRepeat: "repeat",
+        backgroundSize: "auto",
+        backgroundPosition: "top left",
+      }}
+    >
+      <TopNav chapterTitle={chapterTitle} />
+      <AgentLauncher
+        api={api}
+        numPages={numPages}
+        topics={topics}
+        courseSlug={courseSlug}
+        chapterIndex={chapterIndex}
+        setActiveMarker={setActiveMarker}
+      />
+      <PdfCanvas
+        pdfUrl={pdfUrl}
+        api={api}
+        setApi={setApi}
+        numPages={numPages}
+        setNumPages={setNumPages}
+        activeMarker={activeMarker}
+      />
+    </div>
   );
 }

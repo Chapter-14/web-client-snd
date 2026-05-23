@@ -2,6 +2,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { LibraryTour } from "@/components/tours/library-tour";
+import { MobileWarningPopup } from "@/components/mobile-warning-popup";
 
 export default function LibraryLayout({
   children,
@@ -19,6 +20,7 @@ export default function LibraryLayout({
     >
       <AppSidebar variant="inset" collapsible="icon" />
       <SidebarInset>
+        <MobileWarningPopup />
         <SiteHeader />
         {children}
       </SidebarInset>
