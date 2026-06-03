@@ -292,7 +292,13 @@ export function AgentLauncher({
           />
         )}
         {currentCheckpointQuestion && isAgentListening && (
-          <CheckpointPopup question={currentCheckpointQuestion!} />
+          <CheckpointPopup
+            question={currentCheckpointQuestion!}
+            onChoiceSelect={(choice) => {
+              sendUserMessage(choice);
+              setCurrentCheckpointQuestion(null);
+            }}
+          />
         )}
         {FeedbackDialogOpen && (
           <FeedbackDialog
