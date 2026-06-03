@@ -139,7 +139,7 @@ export function SessionManager({
             });
             toast.info("Section Started", {
               description: `${data.section}`,
-              position: "bottom-center",
+              position: "bottom-right",
               className: "bg-background! text-foreground!",
               descriptionClassName: "text-accent/80! italic!",
             });

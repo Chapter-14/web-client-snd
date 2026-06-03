@@ -203,7 +203,11 @@ export function AgentLauncher({
       >
         {isActive ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-1.5 sm:items-center ">
-            <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+            <DropdownMenu
+              open={dropdownOpen}
+              onOpenChange={setDropdownOpen}
+              dir="ltr"
+            >
               <DropdownMenuTrigger
                 asChild
                 disabled={!isActive}

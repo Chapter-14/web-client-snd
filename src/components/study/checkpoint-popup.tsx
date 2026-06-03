@@ -22,7 +22,9 @@ export function CheckpointPopup({
         <div className="flex items-center gap-2 mb-3">
           <CircleHelp className="h-4 w-4 text-[#ffa02f] shrink-0" />
           <h3 className="text-sm font-medium text-[#ffa02f]">
-            Checkpoint Question
+              {(choices?.length ?? 0) > 2
+              ? "Checkpoint Question"
+              : "Check Understanding"}
           </h3>
         </div>
         <p className="text-sm text-[#fffdfd] leading-relaxed mb-4">
