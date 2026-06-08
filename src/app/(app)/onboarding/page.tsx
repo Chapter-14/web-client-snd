@@ -105,7 +105,7 @@ function OnboardingPageContent() {
       <UserButton />
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-bl from-[#ffa02f] to-[#e8942b] shadow-md">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-bl from-[#ffa02f] to-[#e8942b] shadow-md">
             <Phone className="h-6 w-6 text-white" />
           </div>
           <CardTitle className="text-xl">أدخل رقم الجوال</CardTitle>
@@ -131,13 +131,20 @@ function OnboardingPageContent() {
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={submitting}
               />
-              <p id="phoneNumber-help" className="text-muted-foreground text-xs">
+              <p
+                id="phoneNumber-help"
+                className="text-muted-foreground text-xs"
+              >
                 مثال: 05xxxxxxxx
               </p>
             </div>
 
             {error && (
-              <p id="phoneNumber-error" className="text-destructive text-sm" role="alert">
+              <p
+                id="phoneNumber-error"
+                className="text-destructive text-sm"
+                role="alert"
+              >
                 {error}
               </p>
             )}
